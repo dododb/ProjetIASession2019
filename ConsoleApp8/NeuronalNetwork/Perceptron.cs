@@ -47,22 +47,18 @@ namespace Perceptron.NeuronalNetwork
 
         /// <summary>
         /// faudra changer cette methode pour utiliser le bon calcule d'apprentissage
+        /// car ici j'utilise celui du réseau monocouche
         /// </summary>
         /// <param name="realValue"></param>
         public void Learning(double realValue)
         {
             if (realValue == lastCalculateValue) return;
             int length = DataSenders.Count();
-            for (int i = 0; i< length; i++)
+            var senders = DataSenders.Select(x => x.Key).ToList();
+            foreach(var sender in senders)
             {
-                var sender = DataSenders.ElementAt(i).Key;
                 DataSenders[sender] = DataSenders[sender] + alpha * (realValue - LastCalculateValue) * sender.LastCalculateValue;
-                //Console.WriteLine("poids : " + DataSenders[sender] + " || realValue : " + realValue + " || value : " + LastCalculateValue + " || x : " + sender.Value);
             }
-            //foreach (var sender in DataSenders.Keys)
-            //{
-            //    DataSenders[sender] += alpha * (realValue - Value) * sender.Value;
-            //}
         }
 
         public double SumOfEntree()
@@ -70,6 +66,15 @@ namespace Perceptron.NeuronalNetwork
             double result = 0;
             foreach (var ent in DataSenders) result += ent.Key.Value * ent.Value;
             return result;
+        }
+
+        public void PrintData()
+        {
+            int i = 0;
+            foreach (var sender in DataSenders)
+            {
+                Console.WriteLine($"w{i++} : {sender.Value}");
+            }
         }
     }
 }

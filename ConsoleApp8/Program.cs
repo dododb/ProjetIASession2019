@@ -32,13 +32,18 @@ namespace Perceptron
             foreach (var data in dataOu)
                 Console.WriteLine(data[0] + "\t" + data[1] + "\t" + data[2]);
 
-            Console.WriteLine("\n\nEntrainement\n\n");
+            Console.WriteLine("\nPoids du perceptron avant");
+            perceptron.PrintData();
+
+            Console.WriteLine("\nEntrainement\n");
             for (int i = 0; i < nbIteration; i++)
             {
                 Console.WriteLine("itération numéro : " + (i+1));
                 Learn(dataOu, entrees, end);
             }
-            
+
+            Console.WriteLine("Poids du perceptron après");
+            perceptron.PrintData();
             Console.Read();
         }
 
