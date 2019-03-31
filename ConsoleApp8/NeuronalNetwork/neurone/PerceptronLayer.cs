@@ -40,7 +40,7 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
             {
                 isSigmaCalculated = true;
                 double sumSigmaWeigth = dataReceivers.Select(x => x.Value.LastWeigth * x.Key.GetSigma(y)).Sum();
-                sigma = Value * (1 - Value) * sumSigmaWeigth;
+                sigma = LastCalculateValue * (1 - LastCalculateValue) * sumSigmaWeigth;
             }
             return sigma;
         }
