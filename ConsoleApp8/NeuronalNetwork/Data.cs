@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Perceptron.NeuronalNetwork
+namespace ReseauNeuronal.NeuronalNetwork
 {
     class Data
     {
-        public double data1 { get; set; }
-        public double data2 { get; set; }
-        public double label { get; set; }
+        public double Data1 { get; set; }
+        public double Data2 { get; set; }
+        public double Label { get; set; }
 
         public static Data CreateFromArray(double[] array)
         {
-            return new Data { data1 = array[0], data2 = array[1], label = array[2] };
+            return new Data { Data1 = array[0], Data2 = array[1], Label = array[2] };
         }
 
         public static List<Data> CreateFromDataSet(double[][] ds)

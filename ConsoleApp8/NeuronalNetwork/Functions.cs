@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Perceptron.NeuronalNetwork
+namespace ReseauNeuronal.NeuronalNetwork
 {
     public delegate double ActivateFunction(double x);
     public delegate double WeightInitialisation();
-    public class Functions
+    public abstract class Functions
     {
         static Random rand = new Random();
-        public static double SignFunction(double x)
+        public static double Sign(double x)
         {
             if (x > 0) return 1;
             else return 0;

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perceptron", "ConsoleApp8\Perceptron.csproj", "{5A26147D-2B8F-4F8E-94B6-5AD9E439BB9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReseauNeuronal", "ConsoleApp8\ReseauNeuronal.csproj", "{5A26147D-2B8F-4F8E-94B6-5AD9E439BB9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
