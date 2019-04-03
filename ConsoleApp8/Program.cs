@@ -10,31 +10,43 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 1000;
+        static int nbIteration = 10_000;
         static void Main(string[] args)
         {
-            var perceptronF = new PerceptronFinal(Functions.Init0);
-            var perceptronL1 = new PerceptronLayer(Functions.Init0);
-            var perceptronL2 = new PerceptronLayer(Functions.Init0);
-            var perceptronL3 = new PerceptronLayer(Functions.Init0);
-            var perceptronL4 = new PerceptronLayer(Functions.Init0);
+            var perceptronF = new PerceptronFinal(Functions.RandomInit);
+            var perceptronLeft1 = new PerceptronLayer(Functions.RandomInit);
+            var perceptronLeft2 = new PerceptronLayer(Functions.RandomInit);
+            var perceptronRight1 = new PerceptronLayer(Functions.RandomInit);
+            var perceptronRight2 = new PerceptronLayer(Functions.RandomInit);
+            var center = new PerceptronLayer(Functions.RandomInit);
             var entree1 = new NetworkStart();
             var entree2 = new NetworkStart();
             var end = new NetworkEnd();
+            var end2 = new NetworkEnd();
 
-            perceptronL1.ConnectTo(entree1);
-            perceptronL2.ConnectTo(entree2);
+            perceptronLeft1.ConnectTo(entree1);
+            perceptronLeft2.ConnectTo(entree2);
 
-            perceptronL3.ConnectTo(perceptronL1);
-            perceptronL3.ConnectTo(perceptronL2);
+            perceptronLeft1.ConnectTo(entree2);
+            perceptronLeft2.ConnectTo(entree1);
 
-            perceptronL4.ConnectTo(perceptronL1);
-            perceptronL4.ConnectTo(perceptronL2);
+            perceptronF.ConnectTo(perceptronLeft1);
+            perceptronF.ConnectTo(perceptronLeft2);
 
-            perceptronF.ConnectTo(perceptronL3);
-            perceptronF.ConnectTo(perceptronL4);
+            //center.ConnectTo(perceptronLeft1);
+            //center.ConnectTo(perceptronLeft2);
+
+            //perceptronL3.ConnectTo(perceptronL1);
+            //perceptronL3.ConnectTo(perceptronL2);
+
+            //perceptronL4.ConnectTo(perceptronL1);
+            //perceptronL4.ConnectTo(perceptronL2);
+
+            //perceptronRight1.ConnectTo(center);
+            //perceptronRight2.ConnectTo(center);
 
             end.ConnectTo(perceptronF);
+            //end2.ConnectTo(perceptronRight2);
 
             double[] data00 = new[] { 0d, 0d };
             double[] data01 = new[] { 0d, 1d };
@@ -42,8 +54,8 @@ namespace ReseauNeuronal
             double[] data11 = new[] { 1d, 1d };
 
             double[] label00 = new[] { 0d };
-            double[] label01 = new[] { 0d };
-            double[] label10 = new[] { 0d };
+            double[] label01 = new[] { 1d };
+            double[] label10 = new[] { 1d };
             double[] label11 = new[] { 0d };
 
             //double[][] dataXOR = new[] { data00 };
@@ -60,7 +72,9 @@ namespace ReseauNeuronal
                 Console.WriteLine(data[0] + "\t" + data[1] + "\t" + label[0]);
 
             Console.WriteLine("\nPoids du perceptron avant");
-            perceptronF.PrintData();
+            perceptronLeft1.PrintData();
+            Console.WriteLine("\nPoids du perceptron avant");
+            perceptronLeft2.PrintData();
 
             Console.WriteLine("\nEntrainement\n");
             for (int i = 0; i < nbIteration; i++)
@@ -73,9 +87,9 @@ namespace ReseauNeuronal
             perceptronF.PrintData();
 
             Console.WriteLine("\nPoids du perceptron après");
-            perceptronL1.PrintData();
+            perceptronLeft1.PrintData();
             Console.WriteLine("\nPoids du perceptron après");
-            perceptronL2.PrintData();
+            perceptronLeft2.PrintData();
             Console.Read();
         }
 

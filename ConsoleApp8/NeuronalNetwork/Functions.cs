@@ -8,7 +8,7 @@ namespace ReseauNeuronal.NeuronalNetwork
     public delegate double WeightInitialisation();
     public abstract class Functions
     {
-        static Random rand = new Random();
+        static Random rand = new Random(42);
         public static double Sign(double x)
         {
             if (x > 0) return 1;
