@@ -28,10 +28,10 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
                 link.Weight += alpha * sigma * sender.LastCalculateValue;
             }
             hasLearn = true;
-            foreach (var (sender, link) in dataSenders)
-            {
-                sender.Learn(y);
-            }
+            //foreach (var (sender, link) in dataSenders)
+            //{
+            //    sender.Learn(y);
+            //}
         }
 
         protected override double CalculateSigma(double y)

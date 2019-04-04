@@ -12,7 +12,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
         protected List<T> layer = new List<T>();
 
-        public void ConnectTo(ILayerSender sender)
+        public virtual void ConnectTo(ILayerSender sender)
         {
             foreach (var perceptronReceiver in Receivers)
                 foreach (var perceptronSender in sender.Senders)

@@ -1,4 +1,5 @@
 ﻿using ReseauNeuronal.NeuronalNetwork.flux;
+using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,14 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         public Layer(int nbPerceptron, Func<Perceptron> func)
         {
             for (int i = 0; i < nbPerceptron; i++) layer.Add(func());
+        }
+
+        public void Learn(IEnumerable<double> labels)
+        {
+            foreach(var (perceptron, label) in layer.ZipIteration(labels))
+            {
+                perceptron.Learn(label);
+            }
         }
 
         public static void Join(IEnumerable<Layer> layers)
