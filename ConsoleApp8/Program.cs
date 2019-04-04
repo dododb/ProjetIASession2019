@@ -2,6 +2,7 @@
 using ReseauNeuronal.NeuronalNetwork.extremite;
 using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
+using ReseauNeuronal.NeuronalNetwork.Reseau;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,40 +14,8 @@ namespace ReseauNeuronal
         static int nbIteration = 10_000;
         static void Main(string[] args)
         {
-            var perceptronF = new PerceptronFinal(Functions.RandomInit);
-            var perceptronLeft1 = new PerceptronLayer(Functions.RandomInit);
-            var perceptronLeft2 = new PerceptronLayer(Functions.RandomInit);
-            var perceptronRight1 = new PerceptronLayer(Functions.RandomInit);
-            var perceptronRight2 = new PerceptronLayer(Functions.RandomInit);
-            var center = new PerceptronLayer(Functions.RandomInit);
-            var entree1 = new NetworkStart();
-            var entree2 = new NetworkStart();
-            var end = new NetworkEnd();
-            var end2 = new NetworkEnd();
-
-            perceptronLeft1.ConnectTo(entree1);
-            perceptronLeft2.ConnectTo(entree2);
-
-            perceptronLeft1.ConnectTo(entree2);
-            perceptronLeft2.ConnectTo(entree1);
-
-            perceptronF.ConnectTo(perceptronLeft1);
-            perceptronF.ConnectTo(perceptronLeft2);
-
-            //center.ConnectTo(perceptronLeft1);
-            //center.ConnectTo(perceptronLeft2);
-
-            //perceptronL3.ConnectTo(perceptronL1);
-            //perceptronL3.ConnectTo(perceptronL2);
-
-            //perceptronL4.ConnectTo(perceptronL1);
-            //perceptronL4.ConnectTo(perceptronL2);
-
-            //perceptronRight1.ConnectTo(center);
-            //perceptronRight2.ConnectTo(center);
-
-            end.ConnectTo(perceptronF);
-            //end2.ConnectTo(perceptronRight2);
+            var network = new Network(2, 1, 0);
+            
 
             double[] data00 = new[] { 0d, 0d };
             double[] data01 = new[] { 0d, 1d };
@@ -63,33 +32,35 @@ namespace ReseauNeuronal
             double[][] dataXOR = new[] { data00, data01, data10, data11 };
             double[][] labels = new[] { label00, label01, label10, label11 };
 
-            IEntreePoint[] entrees = { entree1, entree2 };
-            IEndPoint[] ends = { end };
+            for(int i = 0; i < nbIteration; i++)
+                foreach(var t in network.Learn(dataXOR, labels)) ;
+            //IEntreePoint[] entrees = { entree1, entree2 };
+            //IEndPoint[] ends = { end };
 
-            Console.WriteLine("données d'entrée");
-            Console.WriteLine("A\tB\tlabel");
-            foreach (var (data, label) in dataXOR.ZipIteration(labels))
-                Console.WriteLine(data[0] + "\t" + data[1] + "\t" + label[0]);
+            //Console.WriteLine("données d'entrée");
+            //Console.WriteLine("A\tB\tlabel");
+            //foreach (var (data, label) in dataXOR.ZipIteration(labels))
+            //    Console.WriteLine(data[0] + "\t" + data[1] + "\t" + label[0]);
 
-            Console.WriteLine("\nPoids du perceptron avant");
-            perceptronLeft1.PrintData();
-            Console.WriteLine("\nPoids du perceptron avant");
-            perceptronLeft2.PrintData();
+            //Console.WriteLine("\nPoids du perceptron avant");
+            //perceptronLeft1.PrintData();
+            //Console.WriteLine("\nPoids du perceptron avant");
+            //perceptronLeft2.PrintData();
 
-            Console.WriteLine("\nEntrainement\n");
-            for (int i = 0; i < nbIteration; i++)
-            {
-                Console.WriteLine("itération numéro : " + (i+1));
-                Learn(dataXOR, labels, entrees, ends);
-            }
+            //Console.WriteLine("\nEntrainement\n");
+            //for (int i = 0; i < nbIteration; i++)
+            //{
+            //    Console.WriteLine("itération numéro : " + (i+1));
+            //    Learn(dataXOR, labels, entrees, ends);
+            //}
 
-            Console.WriteLine("Poids du perceptron après");
-            perceptronF.PrintData();
+            //Console.WriteLine("Poids du perceptron après");
+            //perceptronF.PrintData();
 
-            Console.WriteLine("\nPoids du perceptron après");
-            perceptronLeft1.PrintData();
-            Console.WriteLine("\nPoids du perceptron après");
-            perceptronLeft2.PrintData();
+            //Console.WriteLine("\nPoids du perceptron après");
+            //perceptronLeft1.PrintData();
+            //Console.WriteLine("\nPoids du perceptron après");
+            //perceptronLeft2.PrintData();
             Console.Read();
         }
 

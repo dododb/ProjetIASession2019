@@ -1,4 +1,5 @@
 ﻿using ReseauNeuronal.NeuronalNetwork.extremite;
+using ReseauNeuronal.NeuronalNetwork.flux;
 using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
 using System;
@@ -10,68 +11,85 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class Network
     {
-        private WeightInitialisation weight = Functions.RandomInit;
+        private static WeightInitialisation weight = Functions.RandomInit;
+        private static Func<Perceptron> newPerceptronLayer = () => new PerceptronLayer(weight);
+        private static Func<Perceptron> newPerceptronFinal = () => new PerceptronFinal(weight);
+        //il faudrait faite un objet layer
+        private Layer input;
 
-        private List<PerceptronLayer> input = new List<PerceptronLayer>();
+        private List<Layer> hiddens = new List<Layer>();
+        private List<Layer> ReverseHiddens;
 
-        private List<List<PerceptronLayer>> hiddens = new List<List<PerceptronLayer>>();
-        private List<List<PerceptronLayer>> ReverseHiddens;
+        private Layer output;
 
-        private List<PerceptronFinal> output = new List<PerceptronFinal>();
-
-        public List<NetworkEnd> ends = new List<NetworkEnd>();
-        public List<NetworkStart> starts = new List<NetworkStart>();
+        public LayerEnd ends;
+        public LayerStart starts;
         public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer)
         {
-            for (int i = 0; i < nbDataInput; i++)
-            {
-                starts.Add(new NetworkStart());
-                input.Add(new PerceptronLayer(weight));
-            }
-            for (int i = 0; i < nbDataOutput; i++)
-            {
-                ends.Add(new NetworkEnd());
-                output.Add(new PerceptronFinal(weight));
-            }
-            for (int i = 0; i < nbHiddenLayer; i++) hiddens.Add(new List<PerceptronLayer>());
-            GenerateHiddenLayers();
+            input = new Layer(nbDataInput, newPerceptronLayer);
+            output = new Layer(nbDataOutput, newPerceptronFinal);
+            starts = new LayerStart(nbDataInput);
+            ends = new LayerEnd(nbDataOutput);
+            
+            GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
+            GenerateConnexion();
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
 
-        protected virtual void GenerateHiddenLayers()
+        protected virtual void GenerateHiddenLayers(int lengthIn, int lengthOut, int nbHidden)
         {
-            int lengthOut = output.Count;
-            int lengthIn = input.Count;
-            int nbHidden = hiddens.Count;
-
             
-            foreach(var hidden in hiddens)
+            for(int j = 0; j < nbHidden; j++)
             {
                 int ecart = lengthOut - lengthIn;
                 lengthIn += ecart / nbHidden;
-                for (int i = 0; i < lengthIn; i++)
-                {
-                    hidden.Add(new PerceptronLayer(weight));
-                }
+                hiddens.Add(new Layer(lengthIn, newPerceptronLayer));
+                //for (int i = 0; i < lengthIn; i++)
+                //{
+                    
+                //    hidden.Add(new PerceptronLayer(weight));
+                //}
                 nbHidden += nbHidden==1 ? 0 : -1;
             }
         }
 
+        private void GenerateConnexion()
+        {
+            input.ConnectTo(starts);
+            if (hiddens.Count == 0)
+            {
+                output.ConnectTo(input);
+            }
+            else
+            {
+                var hiddenFirst = hiddens.First();
+                var hiddenLast = hiddens.Last();
+
+                hiddenFirst.ConnectTo(input);
+                Layer.Join(hiddens);
+                output.ConnectTo(hiddenLast);
+            }
+            ends.ConnectTo(output);
+        }
+
         public IEnumerable<double[]> Learn(double[][] dataset, double[][] labelsVector)
         {
-            foreach(var (row, labels) in dataset.ZipIteration(labelsVector))
+            IEnumerable<IDataSender> networkStarts = starts.Senders;
+            IEnumerable<NetworkEnd> networkEnds = ends.Receivers;
+
+            foreach (var (row, labels) in dataset.ZipIteration(labelsVector))
             {
-                foreach (var (data, entree) in row.ZipIteration(starts))
+                foreach (var (data, entree) in row.ZipIteration(networkStarts))
                     entree.Value = data;
 
-                foreach (var (label, end) in labels.ZipIteration(ends))
+                foreach (var (label, end) in labels.ZipIteration(networkEnds))
                 {
                     double prediction = end.Value;
                     Console.WriteLine("prediction : " + prediction + " || " + "label : " + label);
                     end.BeginLearning(label);
                 }
-                foreach (var (label, end) in labels.ZipIteration(ends)) end.ResetLearning();
-                yield return ends.Select(x => x.Value).ToArray();
+                foreach (var (label, end) in labels.ZipIteration(networkEnds)) end.ResetLearning();
+                yield return networkEnds.Select(x => x.Value).ToArray();
             }
         }
     }

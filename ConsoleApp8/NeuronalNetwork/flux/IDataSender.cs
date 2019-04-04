@@ -11,7 +11,7 @@ namespace ReseauNeuronal.NeuronalNetwork.flux
         /// Valeur de sorti
         /// Pour un perceptron cela représente la valeur calculer a partir des valeurs d'entrée et des poids
         /// </summary>
-        double Value { get; }
+        double Value { get; set; }
 
         /// <summary>
         /// valeur retenue de la derniere fois qu'on a utiliser Value

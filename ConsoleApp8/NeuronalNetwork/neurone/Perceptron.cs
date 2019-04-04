@@ -24,6 +24,10 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
                 lastCalculateValue = activateFunction(SumOfEntree());
                 return lastCalculateValue;
             }
+            set
+            {
+                lastCalculateValue = value;
+            }
         }
         public double LastCalculateValue => lastCalculateValue;
 
