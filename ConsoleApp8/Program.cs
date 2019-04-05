@@ -1,4 +1,5 @@
-﻿using ReseauNeuronal.NeuronalNetwork;
+﻿using Newtonsoft.Json;
+using ReseauNeuronal.NeuronalNetwork;
 using ReseauNeuronal.NeuronalNetwork.extremite;
 using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
@@ -11,28 +12,45 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 1_000;
+        static int nbIteration = 10_000;
+        static int nbRow = 100;
+        static int nbInputOutput = 10;
+        static Random randomGenerator = new Random(41);
         static void Main(string[] args)
         {
-            var network = new Network(2, 2, 0);
+            var network = new Network(nbInputOutput, nbInputOutput, 1);
 
-            double[] data00 = new[] { 0d, 0d };
-            double[] data01 = new[] { 0d, 1d };
-            double[] data10 = new[] { 1d, 0d };
-            double[] data11 = new[] { 1d, 1d };
+            //string output = JsonConvert.SerializeObject(network); marche pas encore
+            var ds = GenerateRandomDataset(nbInputOutput, nbRow).ToArray();
 
-            double[] label00 = new[] { 0d, 0d };
-            double[] label01 = new[] { 0d, 1d };
-            double[] label10 = new[] { 1d, 0d };
-            double[] label11 = new[] { 1d, 1d };
-            
-            double[][] dataXOR = new[] { data00, data01, data10, data11 };
-            double[][] labels = new[] { label00, label01, label10, label11 };
+            for (int i = 1; i <= nbIteration; i++)
+            {
+                Console.WriteLine($"iteration : {i}");
+                foreach (var (prediction, label) in network.Learning(ds, ds))
+                    Console.WriteLine(
+                        $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]" +
+                        $"|| label : [{String.Join(", ", label.Select(x => Math.Round(x, 2)))}]");
+                Console.WriteLine();
+            }
 
-            for(int i = 0; i < nbIteration; i++)
-                foreach(var t in network.Learn(dataXOR, labels)) ;
+            //output = JsonConvert.SerializeObject(network);
 
             Console.Read();
+        }
+
+        public static IEnumerable<double[]> GenerateRandomDataset(int nbInput, int nbRow)
+        {
+            for (int i = 0; i < nbRow; i++)
+            {
+                var input = GenerateRandomVector(nbInput).ToArray();
+                yield return input;
+            }
+        }
+
+        public static IEnumerable<double> GenerateRandomVector(int nbInput)
+        {
+            for(int i = 0; i < nbInput; i++)
+                yield return randomGenerator.NextDouble();
         }
     }
 }

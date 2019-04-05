@@ -32,10 +32,5 @@ namespace ReseauNeuronal.NeuronalNetwork.flux
         /// </summary>
         /// <param name="realValue"></param>
         void Learn(double realValue);
-
-        /// <summary>
-        /// remet le réseau comme n'ayant pas appris (pour la prochaine iteration)
-        /// </summary>
-        void ResetLearning();
     }
 }

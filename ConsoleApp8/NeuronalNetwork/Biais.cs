@@ -1,4 +1,5 @@
-﻿using ReseauNeuronal.NeuronalNetwork.extremite;
+﻿using Newtonsoft.Json;
+using ReseauNeuronal.NeuronalNetwork.extremite;
 using ReseauNeuronal.NeuronalNetwork.flux;
 using ReseauNeuronal.NeuronalNetwork.Lien;
 using System;
@@ -8,13 +9,15 @@ using System.Text;
 
 namespace ReseauNeuronal.NeuronalNetwork
 {
-    class Biais : IDataSender, IEntreePoint
+    [JsonObject(MemberSerialization.OptIn)]
+    class Biais : IEntreePoint
     {
+        [JsonProperty]
         public double Value { get; set; } = 1;
 
         public double LastCalculateValue => Value;
-
-        static Biais instance = null;
+        
+        private static Biais instance = null;
         private Biais()
         {
         }

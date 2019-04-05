@@ -4,6 +4,7 @@ using ReseauNeuronal.NeuronalNetwork.neurone;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace ReseauNeuronal.NeuronalNetwork.Reseau
@@ -23,6 +24,12 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             {
                 perceptron.Learn(label);
             }
+        }
+
+        public IEnumerable<double> Predict()
+        {
+            foreach (var perceptron in layer)
+                yield return perceptron.Value;
         }
 
         public static void Join(IEnumerable<Layer> layers)

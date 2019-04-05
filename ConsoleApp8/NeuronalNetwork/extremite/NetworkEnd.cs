@@ -26,16 +26,6 @@ namespace ReseauNeuronal.NeuronalNetwork.extremite
             dataSender = sender;
         }
 
-        public void ResetLearning()
-        {
-            dataSender.ResetLearning();
-        }
-
-        public void BeginLearning(double realValue)
-        {
-            dataSender.Learn(realValue);
-        }
-
         public void PrintData()
         { 
             Console.WriteLine(dataSender.Value);

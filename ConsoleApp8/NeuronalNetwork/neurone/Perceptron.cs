@@ -1,12 +1,15 @@
-﻿using ReseauNeuronal.NeuronalNetwork.flux;
+﻿using Newtonsoft.Json;
+using ReseauNeuronal.NeuronalNetwork.flux;
 using ReseauNeuronal.NeuronalNetwork.Lien;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace ReseauNeuronal.NeuronalNetwork.neurone
 {
+    [JsonObject(MemberSerialization.OptIn)]
     abstract class Perceptron : IDataReceiver, IDataSender
     {
         protected const float alpha = 1; //sera definit dans une variable plus global...
@@ -32,9 +35,11 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         public double LastCalculateValue => lastCalculateValue;
 
         //represente les neurone precedent
+        //[JsonProperty]
         protected Dictionary<IDataSender, Link> dataSenders = new Dictionary<IDataSender, Link>();
 
         //represente les neurone suivant
+        //[JsonProperty]
         protected Dictionary<IDataReceiver, Link> dataReceivers = new Dictionary<IDataReceiver, Link>();
         
         //represente les neurone suivant
@@ -62,29 +67,20 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
             Link newLink = new Link() { Weight = weightInitialisation(), dataReceiver = this, dataSender = dataSender };
             dataSenders[dataSender] = newLink;
             dataSender.ReverseConnexion(this, newLink);
-        }
+        }   
 
         public void ReverseConnexion(IDataReceiver dataReceiver, Link l)
         {
             dataReceivers[dataReceiver] = l;
         }
 
-        protected bool isSigmaCalculated = false;
-
         protected double sigma;
+        protected double lastCalculatedSigma;
         protected abstract double CalculateSigma(double y);
 
-        protected bool hasLearn = false;
-
-        public void ResetLearning()
-        {
-            hasLearn = false;
-            isSigmaCalculated = false;
-            foreach (var (s, l) in dataSenders) s.ResetLearning();
-        }
         public double GetSigma(double y)
         {
-            return CalculateSigma(y);
+            return lastCalculatedSigma;
         }
 
         /// <summary>
@@ -102,15 +98,6 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
             double result = 0;
             foreach (var ent in dataSenders) result += ent.Key.Value * ent.Value.Weight;
             return result;
-        }
-
-        public void PrintData()
-        {
-            int i = 0;
-            foreach (var sender in dataSenders)
-            {
-                Console.WriteLine($"w{i++} : {sender.Value.Weight}");
-            }
         }
     }
 }

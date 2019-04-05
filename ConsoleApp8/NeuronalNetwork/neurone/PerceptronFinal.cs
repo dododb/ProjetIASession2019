@@ -17,27 +17,17 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         /// <param name="realValue"></param>
         public override void Learn(double realValue)
         {
-            if (hasLearn) return;
-            if (realValue == LastCalculateValue) return;
             CalculateSigma(realValue);
             foreach (var (sender, link) in dataSenders)
             {
                 link.Weight += alpha * sigma * sender.LastCalculateValue;
             }
-            hasLearn = true;
-            //foreach (var (sender, link) in dataSenders)
-            //{
-            //    sender.Learn(realValue);
-            //}
         }
 
         protected override double CalculateSigma(double realValue)
         {
-            if (!isSigmaCalculated)
-            {
-                isSigmaCalculated = true;
-                sigma = (realValue - LastCalculateValue) * LastCalculateValue * (1 - LastCalculateValue);
-            }
+            sigma = (realValue - LastCalculateValue) * LastCalculateValue * (1 - LastCalculateValue);
+            lastCalculatedSigma = sigma;
             return sigma;
         }
     }

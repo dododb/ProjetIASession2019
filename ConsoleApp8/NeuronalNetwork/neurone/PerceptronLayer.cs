@@ -19,29 +19,19 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         /// <param name="realValue"></param>
         public override void Learn(double y)
         {
-            if (hasLearn) return;
-            if (y == LastCalculateValue) return;
-            double simga = CalculateSigma(y);
-            //verifier que c'est le bon calcul mais ça a l'ai pas trop mal
+            CalculateSigma(y);
+
             foreach (var (sender, link) in dataSenders)
             {
                 link.Weight += alpha * sigma * sender.LastCalculateValue;
             }
-            hasLearn = true;
-            //foreach (var (sender, link) in dataSenders)
-            //{
-            //    sender.Learn(y);
-            //}
         }
 
         protected override double CalculateSigma(double y)
         {
-            if (!isSigmaCalculated)
-            {
-                isSigmaCalculated = true;
-                double sumSigmaWeigth = dataReceivers.Select(x => x.Value.LastWeigth * x.Key.GetSigma(y)).Sum();
-                sigma = LastCalculateValue * (1 - LastCalculateValue) * sumSigmaWeigth;
-            }
+            double sumSigmaWeigth = dataReceivers.Select(x => x.Value.LastWeigth * x.Key.GetSigma(y)).Sum();
+            sigma = LastCalculateValue * (1 - LastCalculateValue) * sumSigmaWeigth;
+            lastCalculatedSigma = sigma;
             return sigma;
         }
     }

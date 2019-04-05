@@ -1,26 +1,32 @@
-﻿using ReseauNeuronal.NeuronalNetwork.extremite;
+﻿using Newtonsoft.Json;
+using ReseauNeuronal.NeuronalNetwork.extremite;
 using ReseauNeuronal.NeuronalNetwork.flux;
 using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
+    [JsonObject(MemberSerialization.OptIn)]
     class Network
     {
         private static WeightInitialisation weight = Functions.RandomInit;
         private static Func<Perceptron> newPerceptronLayer = () => new PerceptronLayer(weight);
         private static Func<Perceptron> newPerceptronFinal = () => new PerceptronFinal(weight);
-        //il faudrait faite un objet layer
+
+
+        [JsonProperty]
         private Layer input;
-
+        [JsonProperty]
         private List<Layer> hiddens = new List<Layer>();
-        private List<Layer> ReverseHiddens;
-
+        [JsonProperty]
         private Layer output;
+
+        private List<Layer> ReverseHiddens;
 
         public LayerEnd ends;
         public LayerStart starts;
@@ -38,17 +44,11 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
         protected virtual void GenerateHiddenLayers(int lengthIn, int lengthOut, int nbHidden)
         {
-
             for (int j = 0; j < nbHidden; j++)
             {
                 int ecart = lengthOut - lengthIn;
                 lengthIn += ecart / nbHidden;
                 hiddens.Add(new Layer(lengthIn, newPerceptronLayer));
-                //for (int i = 0; i < lengthIn; i++)
-                //{
-
-                //    hidden.Add(new PerceptronLayer(weight));
-                //}
                 nbHidden += nbHidden == 1 ? 0 : -1;
             }
         }
@@ -72,33 +72,41 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             ends.ConnectTo(output);
         }
 
-        public IEnumerable<double[]> Learn(double[][] dataset, double[][] labelsVector)
+        public IEnumerable<double[]> Predict(double[][] dataset)
         {
             IEnumerable<IDataSender> networkStarts = starts.Senders;
             IEnumerable<NetworkEnd> networkEnds = ends.Receivers;
 
-            foreach (var (row, labels) in dataset.ZipIteration(labelsVector))
+            foreach (var row in dataset)
             {
                 foreach (var (data, entree) in row.ZipIteration(networkStarts))
                     entree.Value = data;
 
-                foreach (var (label, end) in labels.ZipIteration(networkEnds))
-                {
-                    double prediction = end.Value;
-                    Console.WriteLine("prediction : " + Math.Round(prediction, 2) + " || " + "label : " + label);
-                    //end.BeginLearning(label);
-                }
-                BeginLearning(labels);
-
-                Console.WriteLine();
-                foreach (var (label, end) in labels.ZipIteration(networkEnds)) end.ResetLearning();
                 yield return networkEnds.Select(x => x.Value).ToArray();
             }
         }
 
-        private void BeginLearning(IEnumerable<double> labels)
+        public IEnumerable<(double[], double[])> Learning(double[][] dataset, double[][] labelsVector)
         {
-            output.Learn(labels); // peut etre retourner la somme des sigma ? ou un IEnumerable de sigma
+            IEnumerable<IDataSender> networkStarts = starts.Senders;
+            IEnumerable<NetworkEnd> networkEnds = ends.Receivers;
+
+            var predict = Predict(dataset);
+            foreach (var (predictions, labels) in predict.ZipIteration(labelsVector))
+            {
+                foreach(var (prediction, label) in predictions.ZipIteration(labels))
+                {
+                    
+                }
+                Learn(labels);
+                
+                yield return (predictions, labels);
+            }
+        }
+
+        private void Learn(IEnumerable<double> labels)
+        {
+            output.Learn(labels); // peut etre retourner un IEnumerable de sigma 
             foreach (var hidden in ReverseHiddens) hidden.Learn(labels);
             input.Learn(labels);
         }
