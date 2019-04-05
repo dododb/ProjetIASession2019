@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json;
@@ -13,13 +14,16 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
     {
         public IEnumerable<T> Receivers => layer;
 
+        public ILayerSender Sender { get; private set; }
+
         [JsonProperty]
         protected List<T> layer = new List<T>();
 
         public virtual void ConnectTo(ILayerSender sender)
         {
-            foreach (var perceptronReceiver in Receivers)
-                foreach (var perceptronSender in sender.Senders)
+            Sender = sender;
+            foreach (var perceptronReceiver in Receivers.AsParallel())
+                foreach (var perceptronSender in sender.Senders.AsParallel())
                     perceptronReceiver.ConnectTo(perceptronSender);
         }
     }

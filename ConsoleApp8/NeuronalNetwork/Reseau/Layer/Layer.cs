@@ -20,22 +20,27 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
         public void Learn(IEnumerable<double> labels)
         {
-            foreach(var (perceptron, label) in layer.ZipIteration(labels))
+            foreach(var (perceptron, label) in layer.ZipIteration(labels).AsParallel())
             {
                 perceptron.Learn(label);
             }
+            if (Sender is Layer l) l.Learn(labels);
         }
 
+        /// <summary>
+        /// pas utilisé
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<double> Predict()
         {
-            foreach (var perceptron in layer)
+            foreach (var perceptron in layer.AsParallel())
                 yield return perceptron.Value;
         }
 
         public static void Join(IEnumerable<Layer> layers)
         {
             var layerPre = layers.First();
-            foreach(var layer in layers)
+            foreach(var layer in layers.AsParallel())
             {
                 if (layer == layerPre) continue;
                 layer.ConnectTo(layerPre);

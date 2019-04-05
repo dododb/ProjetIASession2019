@@ -10,6 +10,8 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
     {
         IEnumerable<T> Receivers { get; }
         void ConnectTo(ILayerSender sender);
+
+        ILayerSender Sender { get; }
     }
 
     interface ILayerSender

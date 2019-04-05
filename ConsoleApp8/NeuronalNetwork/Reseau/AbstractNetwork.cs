@@ -23,16 +23,12 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             var predict = Predict(dataset);
             foreach (var (predictions, labels) in predict.ZipIteration(labelsVector))
             {
-                foreach (var (prediction, label) in predictions.ZipIteration(labels))
-                {
-
-                }
                 Learn(labels);
 
                 yield return (predictions, labels);
             }
         }
 
-        protected abstract void Learn(IEnumerable<double> labels);
+        public abstract void Learn(IEnumerable<double> labels);
     }
 }

@@ -13,14 +13,16 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 10_000;
+        static int nbIteration = 100_000;
         static int nbRow = 10;
         static int nbInputOutput = 2;
+        static int bootleNeck = 5;
+        static int nbHidden = 1;
         static Random randomGenerator = new Random(41);
         static void Main(string[] args)
         {
             Stopwatch watch = new Stopwatch();
-            var network = new Network(nbInputOutput, nbInputOutput, 1);
+            var network = new Network(nbInputOutput, nbInputOutput, nbHidden);
 
             //string output = JsonConvert.SerializeObject(network); marche pas encore
             var ds = GenerateRandomDataset(nbInputOutput, nbRow).ToArray();

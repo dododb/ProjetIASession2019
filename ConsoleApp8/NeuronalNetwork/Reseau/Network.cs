@@ -27,15 +27,15 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         private Layer output;
 
         private List<Layer> ReverseHiddens;
-
-        public LayerEnd ends;
+        
         public LayerStart starts;
+        public Layer FinalLayer => output;
+        public Layer FirstLayer => input;
         public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer)
         {
             input = new Layer(nbDataInput, newPerceptronLayer);
             output = new Layer(nbDataOutput, newPerceptronFinal);
             starts = new LayerStart(nbDataInput);
-            ends = new LayerEnd(nbDataOutput);
 
             GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
             GenerateConnexion();
@@ -50,7 +50,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             input = new Layer(nbDataInput, newPerceptronLayer);
             output = new Layer(nbDataOutput, newPerceptronFinal);
             starts = new LayerStart(nbDataInput);
-            ends = new LayerEnd(nbDataOutput);
 
             GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
             GenerateConnexion();
@@ -85,23 +84,21 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
                 Layer.Join(hiddens);
                 output.ConnectTo(hiddenLast);
             }
-            ends.ConnectTo(output);
+            //ends.ConnectTo(output);
         }
 
         public override double[] Predict(double[] row)
         {
             IEnumerable<IDataSender> networkStarts = starts.Senders;
-            IEnumerable<NetworkEnd> networkEnds = ends.Receivers;
-            foreach (var (data, entree) in row.ZipIteration(networkStarts))
+            IEnumerable<Perceptron> networkEnds = output.Receivers;
+            foreach (var (data, entree) in row.ZipIteration(networkStarts).AsParallel())
                 entree.Value = data;
             return networkEnds.Select(x => x.Value).ToArray();
         }
 
-        protected override void Learn(IEnumerable<double> labels)
+        public override void Learn(IEnumerable<double> labels)
         {
-            output.Learn(labels); // peut etre retourner un IEnumerable de sigma 
-            foreach (var hidden in ReverseHiddens) hidden.Learn(labels);
-            input.Learn(labels);
+            output.Learn(labels);
         }
     }
 }

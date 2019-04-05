@@ -9,6 +9,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
     class LayerStart : ILayerSender
     {
         public IEnumerable<IDataSender> Senders => layer;
+
         private List<NetworkStart> layer = new List<NetworkStart>();
 
         public LayerStart(int nbInput)

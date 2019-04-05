@@ -96,7 +96,7 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         public double SumOfEntree()
         {
             double result = 0;
-            foreach (var ent in dataSenders) result += ent.Key.Value * ent.Value.Weight;
+            foreach (var ent in dataSenders.AsParallel()) result += ent.Key.Value * ent.Value.Weight;
             return result;
         }
     }

@@ -12,6 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="NeuronalNetwork\extremite\IEndPoint.cs" />
+    <Compile Remove="NeuronalNetwork\extremite\NetworkEnd.cs" />
+    <Compile Remove="NeuronalNetwork\Reseau\LayerEnd.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 

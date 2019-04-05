@@ -13,6 +13,8 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         {
             leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden);
             rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden);
+
+            rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
         }
 
         public override double[] Predict(double[] row)
@@ -22,9 +24,9 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             return rightExit;
         }
 
-        protected override void Learn(IEnumerable<double> labels)
+        public override void Learn(IEnumerable<double> labels)
         {
-            throw new NotImplementedException();
+            rightNetwork.Learn(labels);
         }
     }
 }
