@@ -12,7 +12,7 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 10_000;
+        static int nbIteration = 1_000;
         static int nbRow = 100;
         static int nbInputOutput = 10;
         static Random randomGenerator = new Random(41);
