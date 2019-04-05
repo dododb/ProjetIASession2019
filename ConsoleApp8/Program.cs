@@ -6,23 +6,26 @@ using ReseauNeuronal.NeuronalNetwork.neurone;
 using ReseauNeuronal.NeuronalNetwork.Reseau;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 1_000;
-        static int nbRow = 100;
-        static int nbInputOutput = 10;
+        static int nbIteration = 10_000;
+        static int nbRow = 10;
+        static int nbInputOutput = 2;
         static Random randomGenerator = new Random(41);
         static void Main(string[] args)
         {
+            Stopwatch watch = new Stopwatch();
             var network = new Network(nbInputOutput, nbInputOutput, 1);
 
             //string output = JsonConvert.SerializeObject(network); marche pas encore
             var ds = GenerateRandomDataset(nbInputOutput, nbRow).ToArray();
-
+            
+            watch.Start();
             for (int i = 1; i <= nbIteration; i++)
             {
                 Console.WriteLine($"iteration : {i}");
@@ -32,6 +35,8 @@ namespace ReseauNeuronal
                         $"|| label : [{String.Join(", ", label.Select(x => Math.Round(x, 2)))}]");
                 Console.WriteLine();
             }
+            watch.Stop();
+            Console.WriteLine(watch.Elapsed);
 
             //output = JsonConvert.SerializeObject(network);
 
