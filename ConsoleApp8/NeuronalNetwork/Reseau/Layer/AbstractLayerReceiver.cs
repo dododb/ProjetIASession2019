@@ -22,8 +22,8 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         public virtual void ConnectTo(ILayerSender sender)
         {
             Sender = sender;
-            foreach (var perceptronReceiver in Receivers.AsParallel())
-                foreach (var perceptronSender in sender.Senders.AsParallel())
+            foreach (var perceptronReceiver in Receivers)
+                foreach (var perceptronSender in sender.Senders)
                     perceptronReceiver.ConnectTo(perceptronSender);
         }
     }

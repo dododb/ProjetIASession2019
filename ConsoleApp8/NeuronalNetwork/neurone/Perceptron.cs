@@ -12,6 +12,8 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
     [JsonObject(MemberSerialization.OptIn)]
     abstract class Perceptron : IDataReceiver, IDataSender
     {
+        public static ulong iterationNumber = 1;
+        private ulong currentIteration = 0;
         protected const float alpha = 1; //sera definit dans une variable plus global...
 
         protected double lastCalculateValue;
@@ -24,7 +26,14 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         {
             get
             {
-                lastCalculateValue = activateFunction(SumOfEntree());
+                //petit correctif pour que le autoencoder marche...
+                //mais c'est pas ouf conceptuellement parlant
+                //pas sur que les neurones marche encore seul...
+                if (iterationNumber != currentIteration)
+                {
+                    lastCalculateValue = activateFunction(AvgOfEntree());
+                    currentIteration = iterationNumber;
+                }                
                 return lastCalculateValue;
             }
             set
@@ -93,11 +102,11 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
             return dataSenders[sender].Weight;
         }
 
-        public double SumOfEntree()
+        public double AvgOfEntree()
         {
-            double result = 0;
-            foreach (var ent in dataSenders.AsParallel()) result += ent.Key.Value * ent.Value.Weight;
-            return result;
+            return dataSenders.Select(x => x.Key.Value * x.Value.Weight).Average();
+            //foreach (var ent in dataSenders) result += ent.Key.Value * ent.Value.Weight;
+            //return result;
         }
     }
 }

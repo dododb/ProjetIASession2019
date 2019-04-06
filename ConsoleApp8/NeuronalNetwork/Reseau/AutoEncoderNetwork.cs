@@ -14,10 +14,10 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden);
             rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden);
 
-            rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
+            rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer); // lenteur a cause de ça
         }
 
-        public override double[] Predict(double[] row)
+        public override IEnumerable<double> Predict(IEnumerable<double> row)
         {
             var leftExit = leftNetwork.Predict(row);
             var rightExit = rightNetwork.Predict(leftExit);
@@ -27,6 +27,11 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         public override void Learn(IEnumerable<double> labels)
         {
             rightNetwork.Learn(labels);
+        }
+
+        public string GetBottleNeck()
+        {
+            return "";
         }
     }
 }

@@ -87,12 +87,14 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             //ends.ConnectTo(output);
         }
 
-        public override double[] Predict(double[] row)
+        public override IEnumerable<double> Predict(IEnumerable<double> row)
         {
+            Perceptron.iterationNumber++;
             IEnumerable<IDataSender> networkStarts = starts.Senders;
             IEnumerable<Perceptron> networkEnds = output.Receivers;
-            foreach (var (data, entree) in row.ZipIteration(networkStarts).AsParallel())
+            foreach (var (data, entree) in row.ZipIteration(networkStarts))
                 entree.Value = data;
+            //var l = input.Predict();
             return networkEnds.Select(x => x.Value).ToArray();
         }
 

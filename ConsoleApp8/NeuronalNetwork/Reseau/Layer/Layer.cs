@@ -33,14 +33,14 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         /// <returns></returns>
         public IEnumerable<double> Predict()
         {
-            foreach (var perceptron in layer.AsParallel())
+            foreach (var perceptron in layer)
                 yield return perceptron.Value;
         }
 
         public static void Join(IEnumerable<Layer> layers)
         {
             var layerPre = layers.First();
-            foreach(var layer in layers.AsParallel())
+            foreach(var layer in layers)
             {
                 if (layer == layerPre) continue;
                 layer.ConnectTo(layerPre);

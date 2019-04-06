@@ -13,16 +13,16 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 100_000;
-        static int nbRow = 10;
-        static int nbInputOutput = 2;
-        static int bootleNeck = 5;
+        static int nbIteration = 10_000;
+        static int nbRow = 2;
+        static int nbInputOutput = 1024;
+        static int bootleNeck = 512;
         static int nbHidden = 1;
         static Random randomGenerator = new Random(41);
         static void Main(string[] args)
         {
             Stopwatch watch = new Stopwatch();
-            var network = new Network(nbInputOutput, nbInputOutput, nbHidden);
+            var network = new AutoEncoderNetwork(nbInputOutput, bootleNeck, nbHidden);
 
             //string output = JsonConvert.SerializeObject(network); marche pas encore
             var ds = GenerateRandomDataset(nbInputOutput, nbRow).ToArray();
@@ -34,7 +34,7 @@ namespace ReseauNeuronal
                 foreach (var (prediction, label) in network.Learning(ds, ds))
                     Console.WriteLine(
                         $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]" +
-                        $"|| label : [{String.Join(", ", label.Select(x => Math.Round(x, 2)))}]");
+                        $"\nlabel : [{String.Join(", ", label.Select(x => Math.Round(x, 2)))}]\n");
                 Console.WriteLine();
             }
             watch.Stop();

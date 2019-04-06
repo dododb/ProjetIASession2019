@@ -8,9 +8,9 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
     abstract class AbstractNetwork : INetwork
     {
 
-        public abstract double[] Predict(double[] row);
+        public abstract IEnumerable<double> Predict(IEnumerable<double> row);
 
-        public IEnumerable<double[]> Predict(double[][] dataset)
+        public IEnumerable<IEnumerable<double>> Predict(double[][] dataset)
         {
             foreach (var row in dataset)
             {
@@ -18,7 +18,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             }
         }
 
-        public IEnumerable<(double[], double[])> Learning(double[][] dataset, double[][] labelsVector)
+        public IEnumerable<(IEnumerable<double>, IEnumerable<double>)> Learning(double[][] dataset, double[][] labelsVector)
         {
             var predict = Predict(dataset);
             foreach (var (predictions, labels) in predict.ZipIteration(labelsVector))
