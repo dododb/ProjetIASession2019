@@ -62,9 +62,8 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             for (int j = 0; j < nbHidden; j++)
             {
                 int ecart = lengthOut - lengthIn;
-                lengthIn += ecart / nbHidden;
+                lengthIn += ecart / (nbHidden+1-j);
                 hiddens.Add(new Layer(lengthIn, newPerceptronLayer));
-                nbHidden += nbHidden == 1 ? 0 : -1;
             }
         }
 

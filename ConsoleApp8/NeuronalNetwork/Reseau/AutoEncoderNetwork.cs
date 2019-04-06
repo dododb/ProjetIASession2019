@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReseauNeuronal.NeuronalNetwork.neurone;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,12 +7,13 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class AutoEncoderNetwork : AbstractNetwork
     {
+        private Func<Perceptron> create = () => new PerceptronLayer();
         private Network leftNetwork;
         private Network rightNetwork;
 
         public AutoEncoderNetwork(int nbInput, int nbBottleNeck, int nbHidden)
         {
-            leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden);
+            leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden, create, create);
             rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden);
 
             rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer); // lenteur a cause de ça

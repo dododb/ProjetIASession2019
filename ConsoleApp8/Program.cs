@@ -13,12 +13,12 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 10_000;
+        static int nbIteration = 1_000;
         static int nbRow = 2;
-        static int nbInputOutput = 1024;
-        static int bootleNeck = 512;
-        static int nbHidden = 1;
-        static Random randomGenerator = new Random(41);
+        static int nbInputOutput = 100;
+        static int bootleNeck = 75;
+        static int nbHidden = 0;
+        static Random randomGenerator = new Random();
         static void Main(string[] args)
         {
             Stopwatch watch = new Stopwatch();

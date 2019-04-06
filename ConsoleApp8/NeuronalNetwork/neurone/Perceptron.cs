@@ -105,8 +105,6 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         public double AvgOfEntree()
         {
             return dataSenders.Select(x => x.Key.Value * x.Value.Weight).Average();
-            //foreach (var ent in dataSenders) result += ent.Key.Value * ent.Value.Weight;
-            //return result;
         }
     }
 }

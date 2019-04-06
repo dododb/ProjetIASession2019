@@ -7,6 +7,7 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
 {
     class PerceptronLayer : Perceptron
     {
+        public PerceptronLayer() : base(Functions.Sigmoid, Functions.RandomInit) { }
         public PerceptronLayer(WeightInitialisation weight) : base(Functions.Sigmoid, weight)
         {
         }
