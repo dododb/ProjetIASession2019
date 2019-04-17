@@ -8,6 +8,10 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
     class PerceptronLayer : Perceptron
     {
         public PerceptronLayer() : base(Functions.Sigmoid, Functions.RandomInit) { }
+        public PerceptronLayer(double weigthBiais) : base(Functions.Sigmoid, Functions.RandomInit)
+        {
+            ConnectTo(Biais.GetInstance(), weigthBiais);
+        }
         public PerceptronLayer(WeightInitialisation weight) : base(Functions.Sigmoid, weight)
         {
         }

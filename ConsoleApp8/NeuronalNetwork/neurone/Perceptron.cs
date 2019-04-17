@@ -4,8 +4,11 @@ using ReseauNeuronal.NeuronalNetwork.Lien;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Specialized;
 using System.Runtime.Serialization;
 using System.Text;
+using Truncon.Collections;
+using ReseauNeuronal.NeuronalNetwork.sauvegarde;
 
 namespace ReseauNeuronal.NeuronalNetwork.neurone
 {
@@ -26,14 +29,8 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         {
             get
             {
-                //petit correctif pour que le autoencoder marche...
-                //mais c'est pas ouf conceptuellement parlant
-                //pas sur que les neurones marche encore seul...
-                if (iterationNumber != currentIteration)
-                {
-                    lastCalculateValue = activateFunction(AvgOfEntree());
-                    currentIteration = iterationNumber;
-                }                
+                
+                lastCalculateValue = activateFunction(AvgOfEntree());             
                 return lastCalculateValue;
             }
             set
@@ -45,12 +42,13 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
 
         //represente les neurone precedent
         //[JsonProperty]
-        protected Dictionary<IDataSender, Link> dataSenders = new Dictionary<IDataSender, Link>();
+        protected IDictionary<IDataSender, Link> dataSenders = new OrderedDictionary<IDataSender, Link>();
 
         //represente les neurone suivant
         //[JsonProperty]
-        protected Dictionary<IDataReceiver, Link> dataReceivers = new Dictionary<IDataReceiver, Link>();
-        
+        protected IDictionary<IDataReceiver, Link> dataReceivers = new OrderedDictionary<IDataReceiver, Link>();
+
+        public List<(IDataSender, double)> Senders => dataSenders.Select(x => (x.Key, x.Value.Weight)).ToList();
         //represente les neurone suivant
         //protected List<IDataReceiver> dataReceivers = new List<IDataReceiver>();
 
@@ -73,10 +71,15 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
 
         public void ConnectTo(IDataSender dataSender)
         {
-            Link newLink = new Link() { Weight = weightInitialisation(), dataReceiver = this, dataSender = dataSender };
+            ConnectTo(dataSender, weightInitialisation());
+        }
+
+        public void ConnectTo(IDataSender dataSender, double weigth)
+        {
+            Link newLink = new Link() { Weight = weigth, dataReceiver = this, dataSender = dataSender };
             dataSenders[dataSender] = newLink;
             dataSender.ReverseConnexion(this, newLink);
-        }   
+        }
 
         public void ReverseConnexion(IDataReceiver dataReceiver, Link l)
         {
@@ -104,7 +107,17 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
 
         public double AvgOfEntree()
         {
-            return dataSenders.Select(x => x.Key.Value * x.Value.Weight).Average();
+            return dataSenders.Select(x => x.Key.LastCalculateValue * x.Value.Weight).Average();
+        }
+
+        public PerceptronSauvegarde Sauvegarde()
+        {
+            return new PerceptronSauvegarde(this);
+        }
+
+        public void ClearBeforeConnexion()
+        {
+            dataSenders.Clear();
         }
     }
 }

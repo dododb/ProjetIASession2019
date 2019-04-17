@@ -1,6 +1,7 @@
 ﻿using ReseauNeuronal.NeuronalNetwork.flux;
 using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
+using ReseauNeuronal.NeuronalNetwork.sauvegarde;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,19 +19,20 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             for (int i = 0; i < nbPerceptron; i++) layer.Add(func());
         }
 
+        public Layer(List<Perceptron> perceptrons)
+        {
+            layer = perceptrons;
+        }
+
         public void Learn(IEnumerable<double> labels)
         {
             foreach(var (perceptron, label) in layer.ZipIteration(labels).AsParallel())
             {
                 perceptron.Learn(label);
             }
-            if (Sender is Layer l) l.Learn(labels);
+            //if (Sender is Layer l) l.Learn(labels);
         }
 
-        /// <summary>
-        /// pas utilisé
-        /// </summary>
-        /// <returns></returns>
         public IEnumerable<double> Predict()
         {
             foreach (var perceptron in layer)
@@ -46,6 +48,11 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
                 layer.ConnectTo(layerPre);
                 layerPre = layer;
             }
+        }
+
+        public LayerSauvegarde Sauvegarde()
+        {
+            return new LayerSauvegarde(this);
         }
     }
 }

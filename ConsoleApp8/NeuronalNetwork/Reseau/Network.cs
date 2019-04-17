@@ -3,6 +3,7 @@ using ReseauNeuronal.NeuronalNetwork.extremite;
 using ReseauNeuronal.NeuronalNetwork.flux;
 using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
+using ReseauNeuronal.NeuronalNetwork.sauvegarde;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,31 +12,59 @@ using System.Text;
 
 namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
-    [JsonObject(MemberSerialization.OptIn)]
     class Network : AbstractNetwork
     {
         private static WeightInitialisation weight = Functions.RandomInit;
         private Func<Perceptron> newPerceptronLayer = () => new PerceptronLayer(weight);
         private Func<Perceptron> newPerceptronFinal = () => new PerceptronFinal(weight);
 
-
-        [JsonProperty]
+        
         private Layer input;
-        [JsonProperty]
         private List<Layer> hiddens = new List<Layer>();
-        [JsonProperty]
         private Layer output;
 
         private List<Layer> ReverseHiddens;
         
-        public LayerStart starts;
+        public ILayerSender starts;
         public Layer FinalLayer => output;
         public Layer FirstLayer => input;
+        public List<Layer> HiddensLayer => hiddens;
+
+        public Network(Layer input, List<Layer> hiddens, Layer output, LayerStart layerStart)
+        {
+            starts = layerStart;
+            this.input = input;
+            this.output = output;
+            this.hiddens = hiddens;
+
+            ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
+        }
+
+        public Network(Layer input, List<Layer> hiddens, Layer output)
+        {
+            this.input = input;
+            this.output = output;
+            this.hiddens = hiddens;
+
+            ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
+        }
+
         public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer)
         {
             input = new Layer(nbDataInput, newPerceptronLayer);
             output = new Layer(nbDataOutput, newPerceptronFinal);
             starts = new LayerStart(nbDataInput);
+
+            GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
+            GenerateConnexion();
+            ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
+        }
+
+        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer, ILayerSender layerStart)
+        {
+            input = new Layer(nbDataInput, newPerceptronLayer);
+            output = new Layer(nbDataOutput, newPerceptronFinal);
+            starts = layerStart;
 
             GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
             GenerateConnexion();
@@ -88,18 +117,25 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
         public override IEnumerable<double> Predict(IEnumerable<double> row)
         {
-            Perceptron.iterationNumber++;
             IEnumerable<IDataSender> networkStarts = starts.Senders;
-            IEnumerable<Perceptron> networkEnds = output.Receivers;
             foreach (var (data, entree) in row.ZipIteration(networkStarts))
                 entree.Value = data;
-            //var l = input.Predict();
-            return networkEnds.Select(x => x.Value).ToArray();
+
+            foreach(var i in input.Predict());
+            foreach (var hidden in hiddens) foreach (var i in hidden.Predict()) ;
+            return output.Predict().ToArray(); // ça ne marche pas sans le toArray()
         }
 
         public override void Learn(IEnumerable<double> labels)
         {
             output.Learn(labels);
+            foreach (var hidden in ReverseHiddens) hidden.Learn(labels);
+            input.Learn(labels);
+        }
+
+        public NetworkSauvegarde Sauvegarde()
+        {
+            return new NetworkSauvegarde(this);
         }
     }
 }

@@ -7,6 +7,11 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
 {
     class PerceptronFinal : Perceptron
     {
+        //public PerceptronFinal() : base(Functions.Sigmoid, Functions.RandomInit) { }
+        public PerceptronFinal(double weigthBiais) : base(Functions.Sigmoid, Functions.RandomInit)
+        {
+            ConnectTo(Biais.GetInstance(), weigthBiais);
+        }
         public PerceptronFinal(WeightInitialisation weight) : base(Functions.Sigmoid, weight)
         {
         }

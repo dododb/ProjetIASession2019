@@ -12,6 +12,8 @@ namespace ReseauNeuronal.NeuronalNetwork.flux
         /// <param name="dataExit"></param>
         void ConnectTo(IDataSender dataSender);
 
+        void ClearBeforeConnexion();
+
         double GetWeigth(IDataSender sender);
 
         double GetSigma(double y);
