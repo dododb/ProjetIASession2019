@@ -3,6 +3,7 @@ using ReseauNeuronal.NeuronalNetwork.neurone;
 using ReseauNeuronal.NeuronalNetwork.sauvegarde;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -10,6 +11,9 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class AutoEncoderNetwork : AbstractNetwork
     {
+        private static readonly string[] extention = { ".aed1", ".aed2" };
+        public const string defaultFileName = "autoencoder"; // default name if not set, must contain the path
+        public string fileName = defaultFileName;
         private Network leftNetwork;
         private Network rightNetwork;
 
@@ -39,12 +43,20 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             leftNetwork.Learn(labels);
         }
 
-        public override string[] Sauvegarde()
+        public override void Sauvegarde()
         {
-            var t = new NetworkSauvegarde(leftNetwork);
-            string n1 = leftNetwork.Sauvegarde()[0];
-            string n2 = rightNetwork.Sauvegarde()[0];
-            return new[] { n1, n2 };
+            string n1 = leftNetwork.ToString();
+            string n2 = rightNetwork.ToString();
+
+            try
+            {
+                File.WriteAllText($"{fileName}{extention[0]}", n1);
+                File.WriteAllText($"{fileName}{extention[1]}", n2);
+            }
+            catch
+            {
+                Console.WriteLine("already sauvegarding this file");
+            }
         }
 
         public static AutoEncoderNetwork GetAutoEncoder(string[] str)
@@ -56,6 +68,19 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             Network left = n1.GetNetwork();
             Network right = n2.GetNetwork(left.FinalLayer);
             return new AutoEncoderNetwork(left, right);
+        }
+
+        public static AutoEncoderNetwork GetAutoEncoder(string fileName)
+        {
+            return GetAutoEncoder(new[]{
+                File.ReadAllText($"{fileName}{extention[0]}"),
+                File.ReadAllText($"{fileName}{extention[1]}")
+            });
+        }
+
+        public static AutoEncoderNetwork GetAutoEncoder()
+        {
+            return GetAutoEncoder(defaultFileName);
         }
     }
 }

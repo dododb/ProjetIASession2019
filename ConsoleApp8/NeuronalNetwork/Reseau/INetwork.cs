@@ -11,6 +11,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
         IEnumerable<(double[], double[])> Learning(double[][] dataset, double[][] labelsVector);
 
-        string[] Sauvegarde();
+        void Sauvegarde();
     }
 }

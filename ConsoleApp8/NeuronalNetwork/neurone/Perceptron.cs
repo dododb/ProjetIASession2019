@@ -62,6 +62,15 @@ namespace ReseauNeuronal.NeuronalNetwork.neurone
         /// <param name="realValue"></param>
         public abstract void Learn(double realValue);
 
+        /// <summary>
+        /// afin de pouvoir multi threader il faut que la method prenne un object en parametre
+        /// </summary>
+        /// <param name="realValue"></param>
+        public void Learn(object realValue)
+        {
+            Learn(realValue.ToString());
+        }
+
         public Perceptron(ActivateFunction f, WeightInitialisation weight)
         {   
             activateFunction = f;

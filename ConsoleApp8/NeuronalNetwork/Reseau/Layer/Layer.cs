@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 
 namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
@@ -26,16 +27,30 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
         public void Learn(IEnumerable<double> labels)
         {
-            foreach(var (perceptron, label) in layer.ZipIteration(labels).AsParallel())
-            {
-                perceptron.Learn(label);
-            }
+            //foreach (var (perceptron, label) in layer.ZipIteration(labels).AsParallel())
+            //{
+            //    perceptron.Learn(label);
+            //    //ThreadPool.QueueUserWorkItem(new WaitCallback(perceptron.Learn), label);
+            //}
+
+            layer.ZipIteration(labels).AsParallel().ForAll(x => x.Item1.Learn(x.Item2));
+            //using (var countdownEvent = new CountdownEvent(threadCount))
+            //{
+            //    foreach (var (perceptron, label) in layer.ZipIteration(labels).AsParallel())
+            //    {
+            //        //perceptron.Learn(label);
+            //        ThreadPool.QueueUserWorkItem(perceptron.Learn, label);
+            //    }
+
+            //    countdownEvent.Wait();
+            //}
             //if (Sender is Layer l) l.Learn(labels);
         }
 
         public double[] Predict()
         {
-            return layer.Select(x => x.Value).ToArray();
+            return layer.AsParallel().Select(x => x.Value).ToArray();
+            //return layer.Select(x => x.Value).ToArray();
         }
 
         public static void Join(IEnumerable<Layer> layers)

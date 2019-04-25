@@ -6,6 +6,7 @@ using ReseauNeuronal.NeuronalNetwork.neurone;
 using ReseauNeuronal.NeuronalNetwork.sauvegarde;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -14,6 +15,9 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class Network : AbstractNetwork
     {
+        private const string extention = "nwk";
+        public const string defaultFileName = "neuronalNetwork"; // default name if not set, must contain the path
+        public string fileName = defaultFileName;
         private Layer input;
         private List<Layer> hiddens = new List<Layer>();
         private Layer output;
@@ -25,6 +29,13 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         public Layer FirstLayer => input;
         public List<Layer> HiddensLayer => hiddens;
 
+        /// <summary>
+        /// instancie un nouveau Network a partir de layer existant
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="hiddens"></param>
+        /// <param name="output"></param>
+        /// <param name="layerStart"></param>
         public Network(Layer input, List<Layer> hiddens, Layer output, ILayerSender layerStart)
         {
             starts = layerStart;
@@ -34,15 +45,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
-
-        //public Network(Layer input, List<Layer> hiddens, Layer output)
-        //{
-        //    this.input = input;
-        //    this.output = output;
-        //    this.hiddens = hiddens;
-
-        //    ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
-        //}
 
         /// <summary>
         /// instancie un nouveau Network a partir des ses dimension (taille entrée, taille sortie, nb couche caché)
@@ -62,28 +64,25 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
 
-        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer, ILayerSender layerStart)
+        /// <summary>
+        /// instantie un nouveau network a l'aide de ses dimension ainsi que du layer qui le précéde
+        /// </summary>
+        /// <param name="nbDataInput"></param>
+        /// <param name="nbDataOutput"></param>
+        /// <param name="nbHiddenLayer"></param>
+        /// <param name="layerStart"></param>
+        /// <param name="isLast"></param>
+        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer, ILayerSender layerStart, bool isLast = true)
         {
             input = new Layer(nbDataInput, newPerceptronLayer);
-            output = new Layer(nbDataOutput, newPerceptronFinal);
+            output = new Layer(nbDataOutput, isLast ? newPerceptronFinal : newPerceptronLayer);
             starts = layerStart;
 
             GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
             GenerateConnexion();
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
-
-        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer, Network precedent) 
-            : this(nbDataInput, nbDataOutput, nbHiddenLayer, precedent.FinalLayer) { }
-
-        public void ConnectTo(Network n)
-        {
-            n.FirstLayer.ConnectTo(FinalLayer);
-            n.starts = this.FinalLayer;
-
-        }
-
-
+        
         protected virtual void GenerateHiddenLayers(int lengthIn, int lengthOut, int nbHidden)
         {
             for (int j = 0; j < nbHidden; j++)
@@ -110,7 +109,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
                 Layer.Join(hiddens);
                 output.ConnectTo(hiddenLast);
             }
-            //ends.ConnectTo(output);
         }
 
         public override double[] Predict(IEnumerable<double> row)
@@ -131,9 +129,13 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             input.Learn(labels);
         }
 
-        public override string[] Sauvegarde()
+        public override string ToString()
         {
-            return new[]{ new NetworkSauvegarde(this).ToString() };
+            return new NetworkSauvegarde(this).ToString();
+        }
+        public override void Sauvegarde()
+        {
+            File.WriteAllText($"{fileName}{extention}", ToString());
         }
     }
 }
