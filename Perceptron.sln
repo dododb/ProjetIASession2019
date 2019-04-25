@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReseauNeuronal", "ConsoleApp8\ReseauNeuronal.csproj", "{5A26147D-2B8F-4F8E-94B6-5AD9E439BB9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoEncoder_IHM", "AutoEncoder_IHM\AutoEncoder_IHM.csproj", "{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autoencoder_librairy", "Autoencoder_librairy\Autoencoder_librairy.csproj", "{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{5A26147D-2B8F-4F8E-94B6-5AD9E439BB9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A26147D-2B8F-4F8E-94B6-5AD9E439BB9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A26147D-2B8F-4F8E-94B6-5AD9E439BB9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
