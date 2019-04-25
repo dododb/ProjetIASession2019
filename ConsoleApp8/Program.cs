@@ -13,10 +13,10 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 1000_000;
+        static int nbIteration = 100_000;
         static int nbRow = 2;
         static int nbInputOutput = 2;
-        static int bootleNeck = 1;
+        static int bootleNeck = 2;
         static int nbHidden = 1;
         static Random randomGenerator = new Random(5645);
         static void Main(string[] args)
@@ -39,15 +39,24 @@ namespace ReseauNeuronal
             }
             watch.Stop();
             Console.WriteLine(watch.Elapsed);
-            //var saved = network.Sauvegarde();
-            //var auto = AutoEncoderNetwork.GetAutoEncoder(saved);
 
+            foreach (var prediction in network.Predict(ds))
+                Console.WriteLine(
+                        $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]");
+
+
+            var saved = network.Sauvegarde();
+            var strAuto1 = JsonConvert.SerializeObject(saved);
+            var auto = saved.GetNetwork();
+
+            var s2 = auto.Sauvegarde();
+            var strAuto2 = JsonConvert.SerializeObject(s2);
             ////marche pas
-            //foreach (var prediction in auto.Predict(ds))
-            //    Console.WriteLine(
-            //            $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]");
+            foreach (var prediction in auto.Predict(ds))
+                Console.WriteLine(
+                        $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]");
 
-            ////output = JsonConvert.SerializeObject(network);
+            //output = JsonConvert.SerializeObject(network);
             Console.Read();
         }
 

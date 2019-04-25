@@ -13,14 +13,9 @@ using System.Text;
 namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class Network : AbstractNetwork
-    {
-        private static WeightInitialisation weight = Functions.RandomInit;
-        private Func<Perceptron> newPerceptronLayer = () => new PerceptronLayer(weight);
-        private Func<Perceptron> newPerceptronFinal = () => new PerceptronFinal(weight);
-
-        
+    {       
         private Layer input;
-        private List<Layer> hiddens = new List<Layer>();
+        private List<Layer> hiddens;
         private Layer output;
 
         private List<Layer> ReverseHiddens;
@@ -55,7 +50,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             output = new Layer(nbDataOutput, newPerceptronFinal);
             starts = new LayerStart(nbDataInput);
 
-            GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
+            hiddens = GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer).ToList();
             GenerateConnexion();
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
@@ -85,17 +80,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
 
-
-        protected virtual void GenerateHiddenLayers(int lengthIn, int lengthOut, int nbHidden)
-        {
-            for (int j = 0; j < nbHidden; j++)
-            {
-                int ecart = lengthOut - lengthIn;
-                lengthIn += ecart / (nbHidden+1-j);
-                hiddens.Add(new Layer(lengthIn, newPerceptronLayer));
-            }
-        }
-
         private void GenerateConnexion()
         {
             input.ConnectTo(starts);
@@ -112,7 +96,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
                 Layer.Join(hiddens);
                 output.ConnectTo(hiddenLast);
             }
-            //ends.ConnectTo(output);
         }
 
         public override IEnumerable<double> Predict(IEnumerable<double> row)

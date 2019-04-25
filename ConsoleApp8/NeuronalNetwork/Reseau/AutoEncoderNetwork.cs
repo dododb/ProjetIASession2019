@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using ReseauNeuronal.NeuronalNetwork.flux;
+using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 using ReseauNeuronal.NeuronalNetwork.neurone;
 using ReseauNeuronal.NeuronalNetwork.sauvegarde;
 using System;
@@ -10,61 +12,99 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class AutoEncoderNetwork : AbstractNetwork
     {
-        private Func<Perceptron> create = () => new PerceptronLayer();
-        private Network leftNetwork;
-        private Network rightNetwork;
+        private Layer[] input = new Layer[2];
+        private List<Layer>[] hiddens = { new List<Layer>(), new List<Layer>() };
+        private Layer[] output = new Layer[2];
 
-        
-        public AutoEncoderNetwork(Network left, Network right)
+        private List<Layer>[] ReverseHiddens = new List<Layer>[2];
+
+        public ILayerSender starts;
+        public Layer[] FinalLayer => output;
+        public Layer[] FirstLayer => input;
+
+        public List<Layer>[] HiddensLayer => hiddens;
+
+
+        public AutoEncoderNetwork(Layer[] input, List<Layer>[] hiddens, Layer[] output, ILayerSender layerStart)
         {
-            leftNetwork = left;
-            rightNetwork = right;
-            rightNetwork.starts = leftNetwork.FinalLayer;
-            //rightNetwork.FirstLayer.Disconnect();
-            //rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
+            for(int i =0; i<2; i++)
+            {
+                this.input[i] = input[i];
+                this.hiddens[i] = hiddens[i];
+                this.output[i] = output[i];
+            }
+            starts = layerStart;
         }
         public AutoEncoderNetwork(int nbInput, int nbBottleNeck, int nbHidden)
         {
-            leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden, create, create);
-            rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden, leftNetwork.FinalLayer);
+            input[0] = new Layer(nbInput, newPerceptronLayer);
+            hiddens[0] = GenerateHiddenLayers(nbInput, nbBottleNeck, nbHidden).ToList();
+            output[0] = new Layer(nbBottleNeck, newPerceptronLayer);
 
-            //rightNetwork.FirstLayer.Disconnect();
-            //rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
+            input[1] = new Layer(nbBottleNeck, newPerceptronLayer);
+            hiddens[1] = GenerateHiddenLayers(nbInput, nbBottleNeck, nbHidden).Reverse().ToList();
+            output[1] = new Layer(nbInput, newPerceptronFinal);
+
+            starts = new LayerStart(nbInput);
+
+            GenerateConnexion();
+
+            ReverseHiddens[0] = hiddens[0].AsEnumerable().Reverse().ToList();
+            ReverseHiddens[1] = hiddens[1].AsEnumerable().Reverse().ToList();
+        }
+
+        private void GenerateConnexion()
+        {
+            input[0].ConnectTo(starts);
+            for (int i = 0; i < 2; i++)
+            {
+                if (hiddens[i].Count == 0)
+                {
+                    output[i].ConnectTo(input[i]);
+                }
+                else
+                {
+                    var hiddenFirst = hiddens[i].First();
+                    var hiddenLast = hiddens[i].Last();
+
+                    hiddenFirst.ConnectTo(input[i]);
+                    Layer.Join(hiddens[i]);
+                    output[i].ConnectTo(hiddenLast);
+                }
+            }
+            input[1].ConnectTo(output[0]);
         }
 
         public override IEnumerable<double> Predict(IEnumerable<double> row)
         {
-            var leftExit = leftNetwork.Predict(row);
-            foreach (var i in rightNetwork.FirstLayer.Predict()) ;
-            foreach (var h in rightNetwork.HiddensLayer) foreach (var i in h.Predict()) ;
-            var exit = rightNetwork.FinalLayer.Predict().ToArray();
-            //var rightExit = rightNetwork.Predict(leftExit);
-            return exit;
+            IEnumerable<IDataSender> networkStarts = starts.Senders;
+            foreach (var (data, entree) in row.ZipIteration(networkStarts))
+                entree.Value = data;
+
+            foreach (var i in input[0].Predict()) ;
+            foreach (var hidden in hiddens[0]) foreach (var i in hidden.Predict()) ;
+            foreach (var o in output[0].Predict()) ;
+
+            foreach (var i in input[1].Predict()) ;
+            foreach (var hidden in hiddens[1]) foreach (var i in hidden.Predict()) ;
+
+            return output[1].Predict().ToArray(); // ça ne marche pas sans le toArray()
         }
 
         public override void Learn(IEnumerable<double> labels)
         {
-            rightNetwork.Learn(labels);
-            leftNetwork.Learn(labels);
+            output[1].Learn(labels);
+            foreach (var hidden in ReverseHiddens[1]) hidden.Learn(labels);
+            input[1].Learn(labels);
+
+            output[0].Learn(labels);
+            foreach (var hidden in ReverseHiddens[0]) hidden.Learn(labels);
+            input[0].Learn(labels);
         }
 
-        public string[] Sauvegarde()
+        public AutoencoderSauvegarde Sauvegarde()
         {
-            var t = new NetworkSauvegarde(leftNetwork);
-            string n1 = JsonConvert.SerializeObject(t);
-            string n2 = JsonConvert.SerializeObject(new NetworkSauvegarde(rightNetwork));
-            return new[] { n1, n2 };
-        }
-
-        public static AutoEncoderNetwork GetAutoEncoder(string[] str)
-        {
-            if (str.Length != 2) return null;
-            NetworkSauvegarde n1 = JsonConvert.DeserializeObject<NetworkSauvegarde>(str[0]);
-            NetworkSauvegarde n2 = JsonConvert.DeserializeObject<NetworkSauvegarde>(str[1]);
-
-            Network left = n1.GetNetwork();
-            Network right = n2.GetNetwork(left.FinalLayer);
-            return new AutoEncoderNetwork(left, right);
+            return new AutoencoderSauvegarde(this);
         }
     }
 }
