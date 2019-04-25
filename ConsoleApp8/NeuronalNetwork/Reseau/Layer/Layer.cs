@@ -13,11 +13,21 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class Layer : AbstractLayerReceiver<Perceptron>, ILayerSender
     {
+        const int maxThread = 5;
         public IEnumerable<IDataSender> Senders => layer;
+
+        private List<List<Perceptron>> layerSplited = new List<List<Perceptron>>();
+        
 
         public Layer(int nbPerceptron, Func<Perceptron> func)
         {
             for (int i = 0; i < nbPerceptron; i++) layer.Add(func());
+
+            int nbPerceptronPerThread = nbPerceptron / maxThread;
+            for (int i = 1; i <= maxThread; i++)
+            {
+                layerSplited.Add(layer.Where((x, y) => y < i*nbPerceptronPerThread && y >= (i-1)*nbPerceptronPerThread).ToList());
+            }
         }
 
         public Layer(List<Perceptron> perceptrons)
@@ -27,6 +37,15 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 
         public void Learn(IEnumerable<double> labels)
         {
+
+            //layerSplited.ZipIteration(SplitLabels(labels)).AsParallel()
+            //    .ForAll(x =>
+            //    {
+            //        foreach (var (y, z) in x.Item1.ZipIteration(x.Item2))
+            //        {
+            //            y.Learn(z);
+            //        }
+            //    });
             //foreach (var (perceptron, label) in layer.ZipIteration(labels).AsParallel())
             //{
             //    perceptron.Learn(label);
@@ -45,6 +64,15 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             //    countdownEvent.Wait();
             //}
             //if (Sender is Layer l) l.Learn(labels);
+        }
+
+        public IEnumerable<IEnumerable<double>> SplitLabels(IEnumerable<double> labels)
+        {
+            int nbPerceptronPerThread = layer.Count / maxThread;
+            for (int i = 1; i <= maxThread; i++)
+            {
+                yield return labels.Where((x, y) => y < i * nbPerceptronPerThread && y >= (i - 1) * nbPerceptronPerThread).ToList();
+            }
         }
 
         public double[] Predict()
