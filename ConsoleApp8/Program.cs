@@ -15,22 +15,30 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 20_000;
+        static int nbIteration = 10_000;
         static int nbRow = 2;
-        static int nbInputOutput = 50;
+        static int nbInputOutput = 500;
         static int bootleNeck = 50;
         static int nbHidden = 1;
-        static Random randomGenerator = new Random(5645);
-        const int sauvegarRate = 10_000;
-        static bool startFromZero = false;
+        static Random randomGenerator = new Random(7894);
+        const int sauvegarRate = 5_000;
+        //static bool startFromZero = true;
         static void Main(string[] args)
         {
             Stopwatch watch = new Stopwatch();
             INetwork network = null;
-            if(startFromZero)
+            try
+            {
+                network = AutoEncoderNetwork.GetAutoEncoder($"autoencoder_{nbInputOutput}_{nbHidden}_{bootleNeck}");
+            }
+            catch
+            {
                 network = new AutoEncoderNetwork(nbInputOutput, bootleNeck, nbHidden);
-            else
-                network = AutoEncoderNetwork.GetAutoEncoder();
+            }
+            //if(startFromZero)
+
+            //else
+
 
             var ds = GenerateRandomDataset(nbInputOutput, nbRow).ToArray();
             watch.Start();

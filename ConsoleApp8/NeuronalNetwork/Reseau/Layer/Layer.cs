@@ -23,11 +23,11 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         {
             for (int i = 0; i < nbPerceptron; i++) layer.Add(func());
 
-            int nbPerceptronPerThread = nbPerceptron / maxThread;
-            for (int i = 1; i <= maxThread; i++)
-            {
-                layerSplited.Add(layer.Where((x, y) => y < i*nbPerceptronPerThread && y >= (i-1)*nbPerceptronPerThread).ToList());
-            }
+            //int nbPerceptronPerThread = nbPerceptron / maxThread;
+            //for (int i = 1; i <= maxThread; i++)
+            //{
+            //    layerSplited.Add(layer.Where((x, y) => y < i*nbPerceptronPerThread && y >= (i-1)*nbPerceptronPerThread).ToList());
+            //}
         }
 
         public Layer(List<Perceptron> perceptrons)

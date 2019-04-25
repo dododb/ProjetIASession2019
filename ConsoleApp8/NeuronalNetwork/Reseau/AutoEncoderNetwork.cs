@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
-using ReseauNeuronal.NeuronalNetwork.neurone;
 using ReseauNeuronal.NeuronalNetwork.sauvegarde;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
@@ -28,6 +26,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         {
             leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden, false);
             rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden, leftNetwork.FinalLayer);
+            fileName = defaultFileName + $"_{nbInput}_{nbHidden}_{nbBottleNeck}";
         }
 
         public override double[] Predict(IEnumerable<double> row)
