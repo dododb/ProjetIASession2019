@@ -50,7 +50,7 @@ namespace ReseauNeuronal.NeuronalNetwork.sauvegarde
             Perceptron perceptron = PerceptronFactory.GetPerceptron(type, biais);
             if(perceptron==null) return null;
             
-            foreach (var (weigth, sender) in this.senders.ZipIteration(senders))
+            foreach (var (weigth, sender) in sendersWithoutBiais.ZipIteration(senders))
             {
                 perceptron.ConnectTo(sender, weigth);
             }

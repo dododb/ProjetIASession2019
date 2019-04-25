@@ -21,7 +21,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             rightNetwork = right;
             rightNetwork.starts = leftNetwork.FinalLayer;
             //rightNetwork.FirstLayer.Disconnect();
-            //rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
+            rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
         }
         public AutoEncoderNetwork(int nbInput, int nbBottleNeck, int nbHidden)
         {
@@ -29,7 +29,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden, leftNetwork.FinalLayer);
 
             //rightNetwork.FirstLayer.Disconnect();
-            //rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
+            rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
         }
 
         public override IEnumerable<double> Predict(IEnumerable<double> row)
