@@ -39,11 +39,11 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             leftNetwork.Learn(labels);
         }
 
-        public string[] Sauvegarde()
+        public override string[] Sauvegarde()
         {
             var t = new NetworkSauvegarde(leftNetwork);
-            string n1 = JsonConvert.SerializeObject(t);
-            string n2 = JsonConvert.SerializeObject(new NetworkSauvegarde(rightNetwork));
+            string n1 = leftNetwork.Sauvegarde()[0];
+            string n2 = rightNetwork.Sauvegarde()[0];
             return new[] { n1, n2 };
         }
 

@@ -48,5 +48,10 @@ namespace ReseauNeuronal.NeuronalNetwork.sauvegarde
 
             return new Network(inputLayer, hiddensLayer, outputLayer, layerPre);
         }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

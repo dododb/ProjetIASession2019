@@ -131,9 +131,9 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             input.Learn(labels);
         }
 
-        public NetworkSauvegarde Sauvegarde()
+        public override string[] Sauvegarde()
         {
-            return new NetworkSauvegarde(this);
+            return new[]{ new NetworkSauvegarde(this).ToString() };
         }
     }
 }

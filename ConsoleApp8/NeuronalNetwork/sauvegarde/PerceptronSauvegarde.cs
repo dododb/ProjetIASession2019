@@ -57,5 +57,10 @@ namespace ReseauNeuronal.NeuronalNetwork.sauvegarde
             
             return perceptron;
         }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

@@ -28,5 +28,10 @@ namespace ReseauNeuronal.NeuronalNetwork.sauvegarde
             l.Sender = sendersLayer;
             return l;
         }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

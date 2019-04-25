@@ -7,26 +7,34 @@ using ReseauNeuronal.NeuronalNetwork.Reseau;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 1000_000;
+        static int nbIteration = 300_000;
         static int nbRow = 2;
         static int nbInputOutput = 2;
         static int bootleNeck = 2;
         static int nbHidden = 1;
         static Random randomGenerator = new Random(5645);
+
+        static bool startFromZero = false;
         static void Main(string[] args)
         {
             Stopwatch watch = new Stopwatch();
-            var network = new AutoEncoderNetwork(nbInputOutput, bootleNeck, nbHidden);
-            //var network = new Network(nbInputOutput, nbInputOutput, nbHidden*2+1);
-            //string output = JsonConvert.SerializeObject(network); marche pas encore
+            INetwork network = null;
+            if(startFromZero)
+                network = new AutoEncoderNetwork(nbInputOutput, bootleNeck, nbHidden);
+            else
+            {
+                var n1 = File.ReadAllText(@"toto.aed1");
+                var n2 = File.ReadAllText(@"toto.aed2");
+                network = AutoEncoderNetwork.GetAutoEncoder(new[] { n1, n2 });
+            }
             var ds = GenerateRandomDataset(nbInputOutput, nbRow).ToArray();
-            //ds = new[] { new[] { 0d, 0d } };
             watch.Start();
             for (int i = 1; i <= nbIteration; i++)
             {
@@ -40,14 +48,9 @@ namespace ReseauNeuronal
             watch.Stop();
             Console.WriteLine(watch.Elapsed);
             var saved = network.Sauvegarde();
-            var auto = AutoEncoderNetwork.GetAutoEncoder(saved);
 
-            //marche pas
-            foreach (var prediction in auto.Predict(ds))
-                Console.WriteLine(
-                        $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]");
-
-            //output = JsonConvert.SerializeObject(network);
+            File.WriteAllText(@"toto.aed1", saved[0]);
+            File.WriteAllText(@"toto.aed2", saved[1]);
             Console.Read();
         }
 

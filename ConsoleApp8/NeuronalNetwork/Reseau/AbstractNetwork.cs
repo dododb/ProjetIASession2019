@@ -34,5 +34,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         }
 
         public abstract void Learn(IEnumerable<double> labels);
+        public abstract string[] Sauvegarde();
     }
 }
