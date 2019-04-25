@@ -10,7 +10,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class AutoEncoderNetwork : AbstractNetwork
     {
-        private Func<Perceptron> create = () => new PerceptronLayer();
         private Network leftNetwork;
         private Network rightNetwork;
 
@@ -20,26 +19,18 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             leftNetwork = left;
             rightNetwork = right;
             rightNetwork.starts = leftNetwork.FinalLayer;
-            //rightNetwork.FirstLayer.Disconnect();
-            rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
         }
         public AutoEncoderNetwork(int nbInput, int nbBottleNeck, int nbHidden)
         {
-            leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden, create, create);
+            leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden, false);
             rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden, leftNetwork.FinalLayer);
-
-            //rightNetwork.FirstLayer.Disconnect();
-            rightNetwork.FirstLayer.ConnectTo(leftNetwork.FinalLayer);
         }
 
-        public override IEnumerable<double> Predict(IEnumerable<double> row)
+        public override double[] Predict(IEnumerable<double> row)
         {
             var leftExit = leftNetwork.Predict(row);
-            foreach (var i in rightNetwork.FirstLayer.Predict()) ;
-            foreach (var h in rightNetwork.HiddensLayer) foreach (var i in h.Predict()) ;
-            var exit = rightNetwork.FinalLayer.Predict().ToArray();
-            //var rightExit = rightNetwork.Predict(leftExit);
-            return exit;
+            var rightExit = rightNetwork.Predict(leftExit);
+            return rightExit;
         }
 
         public override void Learn(IEnumerable<double> labels)

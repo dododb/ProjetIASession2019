@@ -6,9 +6,9 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     interface INetwork
     {
-        IEnumerable<double> Predict(IEnumerable<double> row);
-        IEnumerable<IEnumerable<double>> Predict(double[][] dataset);
+        double[] Predict(IEnumerable<double> row);
+        IEnumerable<double[]> Predict(double[][] dataset);
 
-        IEnumerable<(IEnumerable<double>, IEnumerable<double>)> Learning(double[][] dataset, double[][] labelsVector);
+        IEnumerable<(double[], double[])> Learning(double[][] dataset, double[][] labelsVector);
     }
 }

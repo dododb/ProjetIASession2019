@@ -13,7 +13,7 @@ namespace ReseauNeuronal
 {
     class Program
     {
-        static int nbIteration = 100_000;
+        static int nbIteration = 1000_000;
         static int nbRow = 2;
         static int nbInputOutput = 2;
         static int bootleNeck = 2;
@@ -39,15 +39,15 @@ namespace ReseauNeuronal
             }
             watch.Stop();
             Console.WriteLine(watch.Elapsed);
-            //var saved = network.Sauvegarde();
-            //var auto = AutoEncoderNetwork.GetAutoEncoder(saved);
+            var saved = network.Sauvegarde();
+            var auto = AutoEncoderNetwork.GetAutoEncoder(saved);
 
-            ////marche pas
-            //foreach (var prediction in auto.Predict(ds))
-            //    Console.WriteLine(
-            //            $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]");
+            //marche pas
+            foreach (var prediction in auto.Predict(ds))
+                Console.WriteLine(
+                        $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]");
 
-            ////output = JsonConvert.SerializeObject(network);
+            //output = JsonConvert.SerializeObject(network);
             Console.Read();
         }
 

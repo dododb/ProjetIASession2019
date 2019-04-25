@@ -46,7 +46,7 @@ namespace ReseauNeuronal.NeuronalNetwork.sauvegarde
             }
             Layer outputLayer = output.GetLayer(current);
 
-            return new Network(inputLayer, hiddensLayer, outputLayer);
+            return new Network(inputLayer, hiddensLayer, outputLayer, layerPre);
         }
     }
 }

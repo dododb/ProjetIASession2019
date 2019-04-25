@@ -14,11 +14,6 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {
     class Network : AbstractNetwork
     {
-        private static WeightInitialisation weight = Functions.RandomInit;
-        private Func<Perceptron> newPerceptronLayer = () => new PerceptronLayer(weight);
-        private Func<Perceptron> newPerceptronFinal = () => new PerceptronFinal(weight);
-
-        
         private Layer input;
         private List<Layer> hiddens = new List<Layer>();
         private Layer output;
@@ -30,7 +25,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         public Layer FirstLayer => input;
         public List<Layer> HiddensLayer => hiddens;
 
-        public Network(Layer input, List<Layer> hiddens, Layer output, LayerStart layerStart)
+        public Network(Layer input, List<Layer> hiddens, Layer output, ILayerSender layerStart)
         {
             starts = layerStart;
             this.input = input;
@@ -40,19 +35,26 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
 
-        public Network(Layer input, List<Layer> hiddens, Layer output)
-        {
-            this.input = input;
-            this.output = output;
-            this.hiddens = hiddens;
+        //public Network(Layer input, List<Layer> hiddens, Layer output)
+        //{
+        //    this.input = input;
+        //    this.output = output;
+        //    this.hiddens = hiddens;
 
-            ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
-        }
+        //    ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
+        //}
 
-        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer)
+        /// <summary>
+        /// instancie un nouveau Network a partir des ses dimension (taille entrée, taille sortie, nb couche caché)
+        /// </summary>
+        /// <param name="nbDataInput"></param>
+        /// <param name="nbDataOutput"></param>
+        /// <param name="nbHiddenLayer"></param>
+        /// <param name="isLast"> indique si il existe des couche aprés le neurone ou pas => change l'algorithme de calcul du lambda pour la derniere couche</param>
+        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer, bool isLast = true)
         {
             input = new Layer(nbDataInput, newPerceptronLayer);
-            output = new Layer(nbDataOutput, newPerceptronFinal);
+            output = new Layer(nbDataOutput, isLast ? newPerceptronFinal : newPerceptronLayer);
             starts = new LayerStart(nbDataInput);
 
             GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
@@ -71,18 +73,14 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
 
-        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer, Func<Perceptron> createFinal, Func<Perceptron> createLayer)
+        public Network(int nbDataInput, int nbDataOutput, int nbHiddenLayer, Network precedent) 
+            : this(nbDataInput, nbDataOutput, nbHiddenLayer, precedent.FinalLayer) { }
+
+        public void ConnectTo(Network n)
         {
-            newPerceptronLayer = createLayer;
-            newPerceptronFinal = createFinal;
+            n.FirstLayer.ConnectTo(FinalLayer);
+            n.starts = this.FinalLayer;
 
-            input = new Layer(nbDataInput, newPerceptronLayer);
-            output = new Layer(nbDataOutput, newPerceptronFinal);
-            starts = new LayerStart(nbDataInput);
-
-            GenerateHiddenLayers(nbDataInput, nbDataOutput, nbHiddenLayer);
-            GenerateConnexion();
-            ReverseHiddens = hiddens.AsEnumerable().Reverse().ToList();
         }
 
 
@@ -115,15 +113,15 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             //ends.ConnectTo(output);
         }
 
-        public override IEnumerable<double> Predict(IEnumerable<double> row)
+        public override double[] Predict(IEnumerable<double> row)
         {
             IEnumerable<IDataSender> networkStarts = starts.Senders;
             foreach (var (data, entree) in row.ZipIteration(networkStarts))
                 entree.Value = data;
 
-            foreach(var i in input.Predict());
-            foreach (var hidden in hiddens) foreach (var i in hidden.Predict()) ;
-            return output.Predict().ToArray(); // ça ne marche pas sans le toArray()
+            input.Predict();
+            foreach (var hidden in hiddens) hidden.Predict();
+            return output.Predict();
         }
 
         public override void Learn(IEnumerable<double> labels)

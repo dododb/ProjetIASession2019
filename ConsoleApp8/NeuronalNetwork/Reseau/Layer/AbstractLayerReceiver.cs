@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json;
 using ReseauNeuronal.NeuronalNetwork.flux;
+using ReseauNeuronal.NeuronalNetwork.neurone;
 
 namespace ReseauNeuronal.NeuronalNetwork.Reseau
 {

@@ -33,10 +33,9 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
             //if (Sender is Layer l) l.Learn(labels);
         }
 
-        public IEnumerable<double> Predict()
+        public double[] Predict()
         {
-            foreach (var perceptron in layer)
-                yield return perceptron.Value;
+            return layer.Select(x => x.Value).ToArray();
         }
 
         public static void Join(IEnumerable<Layer> layers)
