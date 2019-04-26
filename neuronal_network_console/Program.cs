@@ -14,11 +14,11 @@ namespace neuronal_network_console
 {
     class Program
     {
-        static int nbIteration = 1_000;
-        static int nbRow = 2;
-        static int nbInputOutput = 20;
-        static int bootleNeck = 1;
-        static int nbHidden = 1;
+        static int nbIteration = 10_000;
+        //static int nbRow = 2;
+        static int nbInputOutput = 100;
+        static int bootleNeck = 50;
+        static int nbHidden = 0;
         static Random randomGenerator = new Random(7894);
         const int sauvegarRate = 1000;
         //static bool startFromZero = true;
@@ -43,27 +43,35 @@ namespace neuronal_network_console
         static void Main(string[] args)
         {
             //var bytes = File.ReadAllBytes(@"data\chat.bin");
-            //var bmpEntree = new[]{
-            //    (Bitmap)Bitmap.FromFile("img\\left0.jpg"),
+            var bmpEntree = new[]{
+                (Bitmap)Bitmap.FromFile("img\\left0.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\left1.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\left2.jpg"),
 
-            //    (Bitmap)Bitmap.FromFile("img\\up0.jpg"),
-            //};
+                (Bitmap)Bitmap.FromFile("img\\up0.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\up1.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\up2.jpg"),
+            };
 
-            //var bmpSortie = new[]{
-            //    (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
+            var bmpSortie = new[]{
+                (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
 
-            //    (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
-            //};
+                (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
+                (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
+            };
 
 
-            //var bytesEntree = bmpEntree.Select(x => Functions.GetAllPixel(x).ToArray());
-            //var bytesSortie = bmpSortie.Select(x => Functions.GetAllPixel(x).ToArray());
+            var bytesEntree = bmpEntree.Select(x => Functions.GetAllPixel(x).ToArray());
+            var bytesSortie = bmpSortie.Select(x => Functions.GetAllPixel(x).ToArray());
 
-            //var dsEntree = Functions.NormalizeDS(bytesEntree, 255, true).ToArray();
-            //var dsSortie = Functions.NormalizeDS(bytesSortie, 255, true).ToArray();
+            var dsEntree = Functions.NormalizeDS(bytesEntree, 255, true).ToArray();
+            var dsSortie = Functions.NormalizeDS(bytesSortie, 255, true).ToArray();
 
-            var dsEntree = GenerateRandomDataset(100, 2).ToArray();
-            var dsSortie = dsEntree;
+            //var dsEntree = GenerateRandomDataset(100, 2).ToArray();
+            //var dsSortie = dsEntree;
             for (int i = 0; i< dsEntree.Length; i++)
                 Functions.SaveImgGrey(Functions.UnNormalizeRow(dsEntree[i]), @"output\original" + i + ".jpg");
 
