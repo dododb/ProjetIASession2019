@@ -137,5 +137,20 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         {
             File.WriteAllText($"{fileName}{extention}", ToString());
         }
+
+
+        public static Network GetNetworkFromString(string str)
+        {
+            if (str.Length != 2) return null;
+            NetworkSauvegarde n1 = JsonConvert.DeserializeObject<NetworkSauvegarde>(str);
+
+            Network left = n1.GetNetwork();
+            return left;
+        }
+
+        public static Network GetNetwork(string fileName)
+        {
+            return GetNetworkFromString(File.ReadAllText($"{fileName}{extention[0]}"));
+        }
     }
 }
