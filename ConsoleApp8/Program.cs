@@ -17,8 +17,8 @@ namespace ReseauNeuronal
     {
         static int nbIteration = 10_000;
         static int nbRow = 2;
-        static int nbInputOutput = 500;
-        static int bootleNeck = 50;
+        static int nbInputOutput = 200;
+        static int bootleNeck = 30;
         static int nbHidden = 1;
         static Random randomGenerator = new Random(7894);
         const int sauvegarRate = 5_000;

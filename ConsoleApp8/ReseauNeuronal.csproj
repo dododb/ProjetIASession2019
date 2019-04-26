@@ -6,21 +6,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NeuronalNetwork\**" />
     <Compile Remove="Perceptron\**" />
+    <EmbeddedResource Remove="NeuronalNetwork\**" />
     <EmbeddedResource Remove="Perceptron\**" />
+    <None Remove="NeuronalNetwork\**" />
     <None Remove="Perceptron\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="NeuronalNetwork\extremite\IEndPoint.cs" />
-    <Compile Remove="NeuronalNetwork\extremite\NetworkEnd.cs" />
-    <Compile Remove="NeuronalNetwork\Reseau\LayerEnd.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
     <PackageReference Include="Truncon.Collections" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Autoencoder_librairy\Autoencoder_librairy.csproj" />
   </ItemGroup>
 
 </Project>
