@@ -7,27 +7,66 @@ using System.Linq;
 using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
+using ReseauNeuronal.NeuronalNetwork;
+using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
 
 namespace neuronal_network_console
 {
     class Program
     {
-        static int nbIteration = 0;
+        static int nbIteration = 1_000;
         static int nbRow = 2;
-        static int nbInputOutput = 1024;
-        static int bootleNeck = 500;
+        static int nbInputOutput = 20;
+        static int bootleNeck = 1;
         static int nbHidden = 1;
         static Random randomGenerator = new Random(7894);
-        const int sauvegarRate = 1_000;
+        const int sauvegarRate = 1000;
         //static bool startFromZero = true;
-        const string path = @"data\data_batch_1.bin";
+        const string path = @"data\chat.bin";
+
+        static IEnumerable<byte> toto()
+        {
+            yield return 3;
+        }
+
+        static IEnumerable<byte[]> GetCat(byte[] bytes)
+        {
+            var posCat = bytes.AsParallel().Select((x,y) => new { v = x, pos = y }).Where((x, y) => (y % 3073) == 0).Where(x => x.v==3).Select(x => x.pos);
+            var cat = posCat.Select(pos => bytes.Skip(pos).Take(3073).ToArray());
+            return cat;
+        }
+
+        static IEnumerable<double> MatriceSquareDifference(double[] a, double[] b)
+        {
+            return a.ZipIteration(b).Select(x => Math.Pow(x.Item1 - x.Item2,2));
+        }
         static void Main(string[] args)
         {
-            var bytes = File.ReadAllBytes(path);
-            Console.WriteLine(bytes.Length);
+            //var bytes = File.ReadAllBytes(@"data\chat.bin");
+            //var bmpEntree = new[]{
+            //    (Bitmap)Bitmap.FromFile("img\\left0.jpg"),
 
-            var ds = Normalize(SplitBytes(bytes)).ToArray();
-            SaveImg(UnNormalizeRow(ds[0]), @"output\original.jpg");
+            //    (Bitmap)Bitmap.FromFile("img\\up0.jpg"),
+            //};
+
+            //var bmpSortie = new[]{
+            //    (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
+
+            //    (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
+            //};
+
+
+            //var bytesEntree = bmpEntree.Select(x => Functions.GetAllPixel(x).ToArray());
+            //var bytesSortie = bmpSortie.Select(x => Functions.GetAllPixel(x).ToArray());
+
+            //var dsEntree = Functions.NormalizeDS(bytesEntree, 255, true).ToArray();
+            //var dsSortie = Functions.NormalizeDS(bytesSortie, 255, true).ToArray();
+
+            var dsEntree = GenerateRandomDataset(100, 2).ToArray();
+            var dsSortie = dsEntree;
+            for (int i = 0; i< dsEntree.Length; i++)
+                Functions.SaveImgGrey(Functions.UnNormalizeRow(dsEntree[i]), @"output\original" + i + ".jpg");
+
             Stopwatch watch = new Stopwatch();
             INetwork network = null;
             try
@@ -38,77 +77,51 @@ namespace neuronal_network_console
             {
                 network = new AutoEncoderNetwork(nbInputOutput, bootleNeck, nbHidden);
             }
-            //if(startFromZero)
-
-            //else
-
-
-            //var ds = GenerateRandomDataset(nbInputOutput, nbRow).ToArray();
             watch.Start();
             for (int i = 1; i <= nbIteration; i++)
             {
-                Console.WriteLine($"iteration : {i}");
-                foreach (var (prediction, label) in network.Learning(ds, ds))
-                    Console.WriteLine(
-                        $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]" +
-                        $"\nlabel : [{String.Join(", ", label.Select(x => Math.Round(x, 2)))}]\n");
-                Console.WriteLine();
-                if (i % sauvegarRate == 0) new Thread(network.Sauvegarde).Start();
+                IEnumerable<double> meanSquareErrors = network.Learning(dsEntree, dsSortie).Select(x => MatriceSquareDifference(x.Item1, x.Item2).Average());
+
+                foreach(var error in meanSquareErrors)
+                    if (i % 10 == 0 || i % 11 == 0)
+                    {
+                        Console.WriteLine(error);
+                    }
+
+                if (i % 10 == 0 || i % 11 == 0)
+                    Console.WriteLine($"iteration : {i}");
+                if (i % sauvegarRate == 0)
+                {
+                    new Thread(network.Sauvegarde).Start();
+                }
             }
             watch.Stop();
 
-            var predict = network.Predict(ds[0]);
-            var unNormalizedPrediction = UnNormalizeRow(predict);
-            SaveImg(unNormalizedPrediction);
+            var predict = network.Predict(dsEntree);
+            int j = 0;
+            foreach (var pred in predict)
+            { 
+                Functions.SaveImgGrey(Functions.UnNormalizeRow(pred), @"output\img" + j++ + ".jpg");
+            }
+
+            Console.WriteLine(string.Join(", ", predict.First().Select(x => Math.Round(x, 2))));
+            Console.WriteLine("");
+            Console.WriteLine(string.Join(", ", dsEntree.First().Select(x => Math.Round(x, 2))));
+            //Functions.SaveImgGrey(Functions.UnNormalizeRow(predict.First()), @"output\img_.jpg");
             Console.WriteLine(watch.Elapsed);
             if (nbIteration % sauvegarRate != 0) network.Sauvegarde();
             Console.Read();
         }
 
-        public static IEnumerable<byte[]> SplitBytes(byte[] bytes, int splitNumber = 2, int size = 3072, int lengthLabel = 1)
+        public static IEnumerable<byte[]> GetChat(byte[] bytes)
         {
-            int min = Math.Min(bytes.Length/(size+1), splitNumber);
             byte[] current = bytes;
-            for(int i = 0; i< min; i++)
+            for (int i = 0; i < 10000; i++)
             {
-                current = current.Skip(lengthLabel).ToArray();
-                yield return ShadesOfGray(current.Take(size).ToArray());
+                if(current[0] == 3)
+                    yield return current.Take(3073).ToArray();
+                current = current.Skip(3073).ToArray();
             }
-        }
-
-        /// <summary>
-        /// on assum les dimmension etc.. (32*32) 3 couleurs
-        /// </summary>
-        /// <param name="bytes"></param>
-        public static byte[] ShadesOfGray(byte[] bytes)
-        {
-            var output = new byte[bytes.Length / 3];
-            for(int i = 0; i< output.Length; i++)
-            {
-                output[i] = Convert.ToByte((bytes[i] + bytes[i + 1024] + bytes[i + 2 * 1024])/3);
-            }
-            return output;
-        }
-
-        public static IEnumerable<double[]> Normalize(IEnumerable<byte[]> bytes, int minValue = 0, int maxValue = 255)
-        {
-            foreach(var bytesArray in bytes)
-            {
-                yield return bytesArray.Select(x => (double)x / maxValue).ToArray();
-            }
-        }
-
-        public static IEnumerable<byte[]> UnNormalizeDs(double[][] outputs, int minValue = 0, int maxValue = 255)
-        {
-            foreach(var output in outputs)
-            {
-                yield return UnNormalizeRow(output);
-            }
-        }
-
-        public static byte[] UnNormalizeRow(double[] outputs, int minValue = 0, int maxValue = 255)
-        {
-            return outputs.Select(x => Convert.ToByte(x * maxValue)).ToArray();
         }
 
 
@@ -125,22 +138,6 @@ namespace neuronal_network_console
         {
             for (int i = 0; i < nbInput; i++)
                 yield return randomGenerator.NextDouble();
-        }
-
-        public static void SaveImg(byte[] bytes, string name = @"output\img.jpg")
-        {
-            Bitmap empty = new Bitmap(32, 32);
-            for (int y = 0; y < 32; y++)
-            {
-                for (int x = 0; x < 32; x++)
-                {
-                    var pos = y + x * 32;
-                    var grey = bytes[pos];
-                    Color c = Color.FromArgb(grey, grey, grey);
-                    empty.SetPixel(x, y, c);
-                }
-            }
-            empty.Save(name);
         }
     }
 }
