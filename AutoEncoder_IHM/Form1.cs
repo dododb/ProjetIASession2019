@@ -16,6 +16,20 @@ namespace AutoEncoder_IHM
 {
     public partial class Form1 : Form
     {
+        string[] files;
+        string[] fileArray
+        {
+            get
+            {
+                return files;
+            }
+            set
+            {
+                files = value;
+                textBox5.Text = String.Join(";", value);
+            }
+
+        }
         public Form1()
         {
             InitializeComponent();
@@ -79,9 +93,10 @@ namespace AutoEncoder_IHM
             int nbBottleNeck = Convert.ToInt32(numericUpDown3.Value);
             int nbHidden = Convert.ToInt32(numericUpDown4.Value);
 
-            var bytes = File.ReadAllBytes(textBox5.Text);
-            var imgOrigin = Functions.GetImageNumber(bytes, Convert.ToInt32(numericUpDown7.Value));
-            var img = Functions.NormalizeRow(imgOrigin);
+            Bitmap imgToDenoise = (Bitmap)Bitmap.FromFile(fileArray[Convert.ToInt32(numericUpDown7.Value)]);
+
+            var bytes = Functions.GetAllPixelGrey(imgToDenoise).ToArray();
+            var img = Functions.NormalizeRow(bytes, 255, true);
 
             INetwork network = null;
             try
@@ -98,7 +113,7 @@ namespace AutoEncoder_IHM
 
             var imgOut = network.Predict(img);
             Functions.SaveImgGrey(Functions.UnNormalizeRow(img), @"output\displayedIn.jpg");
-            Functions.SaveImg(imgOrigin, @"output\displayedInOrigin.jpg");
+            Functions.SaveImgGrey(bytes, @"output\displayedInOrigin.jpg");
             Functions.SaveImgGrey(Functions.UnNormalizeRow(imgOut), @"output\displayedOut.jpg");
 
             SetPictureBox(pictureBox1, @"output\displayedIn.jpg");
@@ -133,6 +148,23 @@ namespace AutoEncoder_IHM
         {
             for (int i = 0; i < nbInput; i++)
                 yield return randomGenerator.NextDouble();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (this.openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                fileArray = openFileDialog1.FileNames;
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if(folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var folder = folderBrowserDialog1.SelectedPath;
+                fileArray = Directory.GetFiles(folder);
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace ReseauNeuronal.NeuronalNetwork.Reseau
         {
             leftNetwork = new Network(nbInput, nbBottleNeck, nbHidden, false);
             rightNetwork = new Network(nbBottleNeck, nbInput, nbHidden, leftNetwork.FinalLayer);
-            fileName = defaultFileName + $"_{nbInput}_{nbHidden}_{nbBottleNeck}";
+            fileName = defaultFileName /*+ $"_{nbInput}_{nbHidden}_{nbBottleNeck}"*/;
         }
 
         public override double[] Predict(IEnumerable<double> row)

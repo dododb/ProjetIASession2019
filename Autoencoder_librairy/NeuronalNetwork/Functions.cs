@@ -109,11 +109,11 @@ namespace ReseauNeuronal.NeuronalNetwork
         public static void SaveImgGrey(byte[] bytes, string name = @"output\img.jpg")
         {
             Bitmap empty = new Bitmap(defaultWidth, defaultHeigth);
-            for (int y = 0; y < defaultWidth; y++)
+            for (int x = 0; x < defaultWidth; x++)
             {
-                for (int x = 0; x < defaultHeigth; x++)
+                for (int y = 0; y < defaultHeigth; y++)
                 {
-                    var pos = y + x * defaultWidth;
+                    var pos = x + y * defaultWidth;
                     var grey = bytes[pos];
                     Color c = Color.FromArgb(grey, grey, grey);
                     empty.SetPixel(x, y, c);
@@ -124,14 +124,15 @@ namespace ReseauNeuronal.NeuronalNetwork
 
         public static void SaveImg(byte[] bytes, string name = @"output\img.jpg")
         {
-            Bitmap empty = new Bitmap(32, 32);
-            for (int y = 0; y < 32; y++)
+            Bitmap empty = new Bitmap(defaultWidth, defaultHeigth);
+            const int multiply = defaultWidth * defaultHeigth;
+            for (int y = 0; y < defaultWidth; y++)
             {
-                for (int x = 0; x < 32; x++)
+                for (int x = 0; x < defaultHeigth; x++)
                 {
-                    var red = bytes[y + x * 32];
-                    var green = bytes[y + x * 32 + 1024];
-                    var blue = bytes[y + x * 32 + 2048];
+                    var red = bytes[y + x * defaultWidth];
+                    var green = bytes[y + x * defaultWidth + multiply];
+                    var blue = bytes[y + x * defaultWidth + multiply*2];
                     //var grey = bytes[pos];
                     Color c = Color.FromArgb(red, green, blue);
                     empty.SetPixel(x, y, c);
@@ -140,7 +141,7 @@ namespace ReseauNeuronal.NeuronalNetwork
             empty.Save(name, System.Drawing.Imaging.ImageFormat.Jpeg);
         }
 
-        public static IEnumerable<byte> GetAllPixel(Bitmap bmp)
+        public static IEnumerable<byte> GetAllPixelGrey(Bitmap bmp)
         {
             for (int i = 0; i < bmp.Height; i++)
                 for (int j = 0; j < bmp.Width; j++)
@@ -148,6 +149,16 @@ namespace ReseauNeuronal.NeuronalNetwork
                     var pixel = bmp.GetPixel(j, i);
                     byte greyValue = Convert.ToByte((pixel.R + pixel.G + pixel.B) / 3);
                     yield return greyValue;
+                }
+        }
+
+        public static IEnumerable<(byte R, byte G, byte B)> GetAllPixelColo(Bitmap bmp)
+        {
+            for (int i = 0; i < bmp.Height; i++)
+                for (int j = 0; j < bmp.Width; j++)
+                {
+                    var pixel = bmp.GetPixel(j, i);
+                    yield return (pixel.R, pixel.G, pixel.B);
                 }
         }
     }

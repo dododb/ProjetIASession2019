@@ -14,13 +14,14 @@ namespace neuronal_network_console
 {
     class Program
     {
-        static int nbIteration = 10_000;
+        static int nbIteration = 0;
         //static int nbRow = 2;
         static int nbInputOutput = 100;
-        static int bootleNeck = 50;
-        static int nbHidden = 0;
+        static int bootleNeck = 75;
+        static int nbHidden = 0
+            ;
         static Random randomGenerator = new Random(7894);
-        const int sauvegarRate = 1000;
+        const int sauvegarRate = 100;
         //static bool startFromZero = true;
         const string path = @"data\chat.bin";
 
@@ -40,36 +41,103 @@ namespace neuronal_network_console
         {
             return a.ZipIteration(b).Select(x => Math.Pow(x.Item1 - x.Item2,2));
         }
+
+        static Random RandomNoise = new Random();
+        static byte RandomByte(byte b)
+        {
+            if (RandomNoise.NextDouble() < 0.15)
+                return (byte) (b < (256 / 2) ? 255 : 0);
+            else return b;
+        }
+
+        static IEnumerable<byte> RandomBytes(byte[] bs)
+        {
+            foreach(var b in bs)
+            {
+                yield return RandomByte(b);
+            }
+        }
+
         static void Main(string[] args)
         {
-            //var bytes = File.ReadAllBytes(@"data\chat.bin");
-            var bmpEntree = new[]{
-                (Bitmap)Bitmap.FromFile("img\\left0.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\left1.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\left2.jpg"),
+            //var bytes = File.ReadAllBytes(@"data\arrow.bin");
 
-                (Bitmap)Bitmap.FromFile("img\\up0.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\up1.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\up2.jpg"),
-            };
+            var bmpEntree = new List<Bitmap>();
+            for (int i = 0; i < 100; i++)
+                bmpEntree.Add((Bitmap)Bitmap.FromFile($"trainSet_15\\random_{i}.jpg"));
 
-            var bmpSortie = new[]{
-                (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\final_left.jpg"),
+            var bmpSortie = new List<Bitmap>();
+            for (int k = 0; k < 50; k++)
+            {
+                for (int i = 0; i < 1; i++)
+                    bmpSortie.Add((Bitmap)Bitmap.FromFile($"img\\final_left.jpg"));
+                for (int i = 0; i < 1; i++)
+                    bmpSortie.Add((Bitmap)Bitmap.FromFile($"img\\final_up.jpg"));
+            }
 
-                (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
-                (Bitmap)Bitmap.FromFile("img\\final_up.jpg"),
-            };
+            //var colo = bmpEntree.Select(x => Functions.GetAllPixelColo(x).ToArray()).ToArray();
+            //var red = colo.Select(x => toto().Concat(x.Select(y => y.R)).ToArray());
+            //var green = colo.Select(x => x.Select(y => y.G).ToArray());
+            //var blue = colo.Select(x => x.Select(y => y.B).ToArray());
+
+            //var binaryFile = red.Concat(green).Concat(blue).SelectMany(x => x).ToArray();
+            //File.WriteAllBytes("data\\arrow.bin", binaryFile);
+
+            //var bmpEntree = new List<Bitmap>() {
+            //    (Bitmap)Bitmap.FromFile($"img\\left0.jpg"),
+            //    (Bitmap)Bitmap.FromFile($"img\\left1.jpg"),
+            //    (Bitmap)Bitmap.FromFile($"img\\left2.jpg"),
+
+            //    (Bitmap)Bitmap.FromFile($"img\\up0.jpg"),
+            //    (Bitmap)Bitmap.FromFile($"img\\up1.jpg"),
+            //    (Bitmap)Bitmap.FromFile($"img\\up2.jpg"),
+
+            //};
+            //var bmpSortie = new List<Bitmap>()
+            //{
+            //    (Bitmap) Bitmap.FromFile($"img\\final_left.jpg"),
+            //    (Bitmap) Bitmap.FromFile($"img\\final_left.jpg"),
+            //    (Bitmap) Bitmap.FromFile($"img\\final_left.jpg"),
+
+            //    (Bitmap) Bitmap.FromFile($"img\\final_up.jpg"),
+            //    (Bitmap) Bitmap.FromFile($"img\\final_up.jpg"),
+            //    (Bitmap) Bitmap.FromFile($"img\\final_up.jpg"),
+            //};
+
+            //var bmpEntree = new List<Bitmap>() {
+            //    //(Bitmap)Bitmap.FromFile($"img\\left1.jpg"),
+            //    (Bitmap)Bitmap.FromFile($"img\\final_left.jpg"),
+
+            //    (Bitmap)Bitmap.FromFile($"img\\final_up.jpg"),
+
+            //};
+            //var bmpSortie = new List<Bitmap>()
+            //{
+            //    (Bitmap) Bitmap.FromFile($"img\\final_left.jpg"),
+
+            //    (Bitmap) Bitmap.FromFile($"img\\final_up.jpg"),
+            //};
+            var bytesEntree = bmpEntree.Select(x => Functions.GetAllPixelGrey(x).ToArray());
 
 
-            var bytesEntree = bmpEntree.Select(x => Functions.GetAllPixel(x).ToArray());
-            var bytesSortie = bmpSortie.Select(x => Functions.GetAllPixel(x).ToArray());
+            //var sauvegarde = bytesEntree.Select(x => RandomBytes(x));
+            //int k = 0;
+            //for (int l = 0; l < 500 / 2; l++)
+            //    foreach (var b in sauvegarde)
+            //        Functions.SaveImgGrey(b.ToArray(), $"trainSet_15\\random_{(k++)}.jpg");
+
+            //k = 0;
+            //for (int l = 0; l < 125 / 2; l++)
+            //    foreach (var b in sauvegarde)
+            //        Functions.SaveImgGrey(b.ToArray(), $"testSet_15\\random_{(k++)}.jpg");
+
+            var bytesSortie = bmpSortie.Select(x => Functions.GetAllPixelGrey(x).ToArray());
+            //var bytesEntree = Functions.SplitBytes(bytes);
+            // Functions.SaveImgGrey(bytesEntree.First(), $"testSet\\random_{(k++)}.jpg");
+            Console.WriteLine(String.Join(", ", bytesSortie.First()));
 
             var dsEntree = Functions.NormalizeDS(bytesEntree, 255, true).ToArray();
             var dsSortie = Functions.NormalizeDS(bytesSortie, 255, true).ToArray();
-
             //var dsEntree = GenerateRandomDataset(100, 2).ToArray();
             //var dsSortie = dsEntree;
             for (int i = 0; i< dsEntree.Length; i++)
@@ -79,7 +147,7 @@ namespace neuronal_network_console
             INetwork network = null;
             try
             {
-                network = AutoEncoderNetwork.GetAutoEncoder($"autoencoder_{nbInputOutput}_{nbHidden}_{bootleNeck}");
+                network = AutoEncoderNetwork.GetAutoEncoder(/*$"autoencoder_{nbInputOutput}_{nbHidden}_{bootleNeck}"*/);
             }
             catch
             {
