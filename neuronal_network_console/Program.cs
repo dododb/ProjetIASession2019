@@ -37,10 +37,7 @@ namespace neuronal_network_console
             return cat;
         }
 
-        static IEnumerable<double> MatriceSquareDifference(double[] a, double[] b)
-        {
-            return a.ZipIteration(b).Select(x => Math.Pow(x.Item1 - x.Item2,2));
-        }
+        
 
         static Random RandomNoise = new Random();
         static byte RandomByte(byte b)
@@ -135,7 +132,7 @@ namespace neuronal_network_console
             //var bytesEntree = Functions.SplitBytes(bytes);
             // Functions.SaveImgGrey(bytesEntree.First(), $"testSet\\random_{(k++)}.jpg");
             Console.WriteLine(String.Join(", ", bytesSortie.First()));
-
+            Console.WriteLine(String.Join(", ", bytesEntree.First()));
             var dsEntree = Functions.NormalizeDS(bytesEntree, 255, true).ToArray();
             var dsSortie = Functions.NormalizeDS(bytesSortie, 255, true).ToArray();
             //var dsEntree = GenerateRandomDataset(100, 2).ToArray();
@@ -156,7 +153,7 @@ namespace neuronal_network_console
             watch.Start();
             for (int i = 1; i <= nbIteration; i++)
             {
-                IEnumerable<double> meanSquareErrors = network.Learning(dsEntree, dsSortie).Select(x => MatriceSquareDifference(x.Item1, x.Item2).Average());
+                IEnumerable<double> meanSquareErrors = network.Learning(dsEntree, dsSortie).Select(x => Functions.MatriceSquareDifference(x.Item1, x.Item2).Average());
 
                 foreach(var error in meanSquareErrors)
                     if (i % 10 == 0 || i % 11 == 0)
@@ -179,7 +176,8 @@ namespace neuronal_network_console
             { 
                 Functions.SaveImgGrey(Functions.UnNormalizeRow(pred), @"output\img" + j++ + ".jpg");
             }
-
+            Console.WriteLine();
+            Console.WriteLine(string.Join(", ", Functions.UnNormalizeRow(predict.First())));
             Console.WriteLine(string.Join(", ", predict.First().Select(x => Math.Round(x, 2))));
             Console.WriteLine("");
             Console.WriteLine(string.Join(", ", dsEntree.First().Select(x => Math.Round(x, 2))));

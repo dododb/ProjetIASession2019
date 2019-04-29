@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoEncoder_IHM", "AutoEncoder_IHM\AutoEncoder_IHM.csproj", "{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autoencoder_librairy", "Autoencoder_librairy\Autoencoder_librairy.csproj", "{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "neuronal_network_console", "neuronal_network_console\neuronal_network_console.csproj", "{07B3F192-93AC-4239-BDBB-5734C335F1C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autoencoder_librairy", "Autoencoder_librairy\Autoencoder_librairy.csproj", "{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F82827E5-FC1E-4437-80FA-7FDC1ED2D5EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{07B3F192-93AC-4239-BDBB-5734C335F1C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{07B3F192-93AC-4239-BDBB-5734C335F1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07B3F192-93AC-4239-BDBB-5734C335F1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07B3F192-93AC-4239-BDBB-5734C335F1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ABD9EF9-0454-403A-996A-7FC43BACB3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

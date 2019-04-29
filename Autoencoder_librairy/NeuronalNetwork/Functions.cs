@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReseauNeuronal.NeuronalNetwork.IEnumerableExtention;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -160,6 +161,11 @@ namespace ReseauNeuronal.NeuronalNetwork
                     var pixel = bmp.GetPixel(j, i);
                     yield return (pixel.R, pixel.G, pixel.B);
                 }
+        }
+
+        public static IEnumerable<double> MatriceSquareDifference(double[] a, double[] b)
+        {
+            return a.ZipIteration(b).Select(x => Math.Pow(x.Item1 - x.Item2, 2));
         }
     }
 }

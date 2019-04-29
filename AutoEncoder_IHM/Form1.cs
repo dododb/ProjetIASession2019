@@ -16,17 +16,50 @@ namespace AutoEncoder_IHM
 {
     public partial class Form1 : Form
     {
-        string[] files;
-        string[] fileArray
+        string[] filesPred;
+        string[] fileArrayPred
         {
             get
             {
-                return files;
+                return filesPred;
             }
             set
             {
-                files = value;
+                filesPred = value;
                 textBox5.Text = String.Join(";", value);
+                //textBox5.Refresh();
+            }
+
+        }
+
+        string[] filesTrain;
+        string[] fileArrayTrain
+        {
+            get
+            {
+                return filesTrain;
+            }
+            set
+            {
+                filesTrain = value;
+                textBox4.Text = String.Join(";", value);
+                //textBox4.Refresh();
+            }
+
+        }
+
+        string[] filesReel;
+        string[] fileArrayReel
+        {
+            get
+            {
+                return filesReel;
+            }
+            set
+            {
+                filesReel = value;
+                textBox8.Text = String.Join(";", value);
+                //textBox8.Refresh();
             }
 
         }
@@ -49,8 +82,20 @@ namespace AutoEncoder_IHM
             int nbBottleNeck = Convert.ToInt32(numericUpDown3.Value);
             int nbHidden = Convert.ToInt32(numericUpDown4.Value);
 
-            var bytes = File.ReadAllBytes(textBox3.Text);
-            var ds = Functions.NormalizeDS(Functions.SplitBytes(bytes)).ToArray();
+            var bmpEntree = new List<Bitmap>();
+            foreach(var file in fileArrayTrain)
+                bmpEntree.Add((Bitmap)Bitmap.FromFile(file));
+
+            var bmpSortie = new List<Bitmap>();
+            for(int i = 0; i<50; i++)
+                foreach (var file in fileArrayReel)
+                    bmpSortie.Add((Bitmap)Bitmap.FromFile(file));
+
+            var bytesEntree = bmpEntree.Select(x => Functions.GetAllPixelGrey(x).ToArray());
+            var bytesSortie = bmpSortie.Select(x => Functions.GetAllPixelGrey(x).ToArray());
+
+            var dsEntree = Functions.NormalizeDS(bytesEntree, 255, true).ToArray();
+            var dsSortie = Functions.NormalizeDS(bytesSortie, 255, true).ToArray();
             INetwork network = null;
             try
             {
@@ -64,22 +109,26 @@ namespace AutoEncoder_IHM
                 network = new AutoEncoderNetwork(nbEntree, nbBottleNeck, nbHidden);
             }
 
-            int nbRow = Convert.ToInt32(numericUpDown5.Value);
+            //int nbRow = Convert.ToInt32(numericUpDown5.Value);
             int nbIteration = Convert.ToInt32(numericUpDown1.Value);
             int sauvegardeRate = Convert.ToInt32(numericUpDown6.Value);
             for (int i = 1; i <= nbIteration; i++)
             {
-                foreach (var (prediction, label) in network.Learning(ds, ds)) ;
+                IEnumerable<double> meanSquareErrors = network.Learning(dsEntree, dsSortie).Select(x => Functions.MatriceSquareDifference(x.Item1, x.Item2).Average());
+                double value = meanSquareErrors.Average();
                     //TextBoxWriteLine(
                     //    $"prediction : [{String.Join(", ", prediction.Select(x => Math.Round(x, 2)))}]" +
                     //    $"\nlabel : [{String.Join(", ", label.Select(x => Math.Round(x, 2)))}]\n");
                 Console.WriteLine();
                 if (i % sauvegardeRate == 0) new Thread(network.Sauvegarde).Start();
-                if(i % 100 == 0)
+                if(i % 10 == 0)
                 {
                     textBox2.Text = i.ToString();
+                    textBox7.Text = value.ToString();
                     this.textBox2.Refresh();
                     this.textBox4.Refresh();
+                    textBox7.Refresh();
+
                 }
             }
             this.Enabled = true;
@@ -93,7 +142,7 @@ namespace AutoEncoder_IHM
             int nbBottleNeck = Convert.ToInt32(numericUpDown3.Value);
             int nbHidden = Convert.ToInt32(numericUpDown4.Value);
 
-            Bitmap imgToDenoise = (Bitmap)Bitmap.FromFile(fileArray[Convert.ToInt32(numericUpDown7.Value)]);
+            Bitmap imgToDenoise = (Bitmap)Bitmap.FromFile(fileArrayPred[Convert.ToInt32(numericUpDown7.Value)]);
 
             var bytes = Functions.GetAllPixelGrey(imgToDenoise).ToArray();
             var img = Functions.NormalizeRow(bytes, 255, true);
@@ -154,7 +203,7 @@ namespace AutoEncoder_IHM
         {
             if (this.openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                fileArray = openFileDialog1.FileNames;
+                fileArrayPred = openFileDialog1.FileNames;
             }
         }
 
@@ -163,7 +212,41 @@ namespace AutoEncoder_IHM
             if(folderBrowserDialog1.ShowDialog() == DialogResult.OK)
             {
                 var folder = folderBrowserDialog1.SelectedPath;
-                fileArray = Directory.GetFiles(folder);
+                fileArrayPred = Directory.GetFiles(folder);
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (this.openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                fileArrayTrain = openFileDialog1.FileNames;
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var folder = folderBrowserDialog1.SelectedPath;
+                fileArrayTrain = Directory.GetFiles(folder);
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (this.openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                fileArrayReel = openFileDialog1.FileNames;
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var folder = folderBrowserDialog1.SelectedPath;
+                fileArrayReel = Directory.GetFiles(folder);
             }
         }
     }
